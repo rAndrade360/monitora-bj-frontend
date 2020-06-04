@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "label": "Febre",
+    "value": "fever"
+  },
+  {
+    "id": 2,
+    "label": "Tosse",
+    "value": "cough"
+  },
+  {
+    "id": 3,
+    "label": "Dificuldade para respirar",
+    "value": "difficulty_breathing"
+  },
+  {
+    "id": 4,
+    "label": "Produção de Escarro",
+    "value": "sputum_production"
+  },
+  {
+    "id": 5,
+    "label": "Congestão nasal ou conjuntival",
+    "value": "nasal_congestion"
+  },
+  {
+    "id": 6,
+    "label": "Dificuldade para deglutir",
+    "value": "difficulty_swallowing"
+  },
+  {
+    "id": 7,
+    "label": "Dor de garganta",
+    "value": "sore_throat"
+  },
+  {
+    "id": 8,
+    "label": "Coriza",
+    "value": "coryza"
+  },
+  {
+    "id": 9,
+    "label": "Sinais de cianose",
+    "value": "signs_of_cyanosis"
+  },
+  {
+    "id": 10,
+    "label": "Batimento de asa de nariz, tiragem",
+    "value": "drawing"
+  },
+  {
+    "id": 11,
+    "label": "Intercostal ou dispnéia",
+    "value": "intercostal"
+  },
+  {
+    "id": 12,
+    "label": "Fadiga",
+    "value": "fatigue"
+  },
+  {
+    "id": 13,
+    "label": "Mialgia/Artralgia",
+    "value": "myalgia_or_arthralgia"
+  },
+  {
+    "id": 14,
+    "label": "Dor de cabeça",
+    "value": "headache"
+  },
+  {
+    "id": 15,
+    "label": "Calafrio",
+    "value": "chill"
+  },
+  {
+    "id": 16,
+    "label": "Manchas vermelhas pelo corpo",
+    "value": "red_spots_on_the_body"
+  },
+  {
+    "id": 17,
+    "label": "Gânglios linfáticos aumentados",
+    "value": "enlarged_lymph_nodes"
+  },
+  {
+    "id": 18,
+    "label": "Diarréia",
+    "value": "diarrhea"
+  },
+  {
+    "id": 19,
+    "label": "Náuseas",
+    "value": "nausea"
+  },
+  {
+    "id": 20,
+    "label": "Vômitos",
+    "value": "vomiting"
+  },
+  {
+    "id": 21,
+    "label": "Desidratação",
+    "value": "dehydration"
+  },
+  {
+    "id": 22,
+    "label": "Inapetência",
+    "value": "inappetence"
+  },
+  {
+    "id": 23,
+    "label": "Perda do paladar",
+    "value": "loss_of_taste"
+  },
+  {
+    "id": 24,
+    "label": "Perda do olfato",
+    "value": "loss_of_smell"
+  }
+]

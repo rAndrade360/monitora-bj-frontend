@@ -1,0 +1,38 @@
+:root {
+  --main-text-color: #666666;
+}
+
+.card {
+  width: 100%;
+  max-width: 200px;
+  border-radius: 12px;
+  padding: 10px;
+  background-color: #fff;
+  border-bottom: 10px solid;
+  margin: 20px;
+}
+
+.card-title {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  color: var(--main-text-color);
+  margin: 10px 0px;
+}
+
+.card-value{
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--main-text-color);
+}
+
+.card-date {
+  font-size: 15px;
+  color: var(--main-text-color);;
+}
+
+.card-discription{
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--main-text-color);
+}

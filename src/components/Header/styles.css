@@ -1,0 +1,15 @@
+.text-black {
+  color: #000;
+}
+
+.logo-style{
+  width: 50%;
+  margin-top: 10px;
+}
+
+@media only screen and (max-width: 600px){
+  .logo-style{
+    width: 100%;
+    height: 100%;
+  }
+}
