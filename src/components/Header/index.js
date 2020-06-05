@@ -27,12 +27,14 @@ function Header() {
     <header>
       <ul id="dropdown1" className="dropdown-content">
         <li>
-          <Link to={`/dashboard/patients/1`} className="text-black">
+          <Link to="/dashboard/patients/1" className="text-black">
             Buscar
           </Link>
         </li>
         <li>
-          <Link to={`/dashboard/patient/store`} className="text-black">
+          <Link
+            to="dashboard/patient/store"
+            className="text-black">
             Cadastrar
           </Link>
         </li>
@@ -40,13 +42,13 @@ function Header() {
       <nav className="white">
         <div className="container">
           <div className="nav-wrapper">
-            <a href="/dashboard" className="brand-logo">
+            <Link to="/dashboard" className="brand-logo">
               <img
                 src={logo}
                 className="logo-style"
                 alt="Logo do monitora-BJ"
               />
-            </a>
+            </Link>
             <a data-target="mobile-demo" className="sidenav-trigger">
               <i className="material-icons text-black">menu</i>
             </a>
@@ -105,13 +107,13 @@ function Header() {
               <div className="collapsible-body">
                 <ul>
                   <li>
-                    <Link to={`/dashboard/patients/1`} className="text-black">
+                    <Link to="/dashboard/patients/1" className="text-black">
                       Buscar
                     </Link>
                   </li>
                   <li>
                     <Link
-                      to={`/dashboard/patient/store`}
+                      to="/dashboard/patient/store"
                       className="text-black"
                     >
                       Cadastrar

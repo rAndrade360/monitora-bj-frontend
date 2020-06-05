@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import image from '../../assets/img.svg';
 import logo from '../../assets/logo.svg';
 import { useAuth } from '../../contexts/Auth';
 import './styles.css';
 
-function Login({ history }) {
+function Login() {
   const [form, setForm] = useState({
     acess_id: '',
     password: '',
   });
 
-  const { signIn, signed } = useAuth();
+  const { signIn } = useAuth();
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -23,9 +24,6 @@ function Login({ history }) {
   function changeForm(e) {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
-    if (signed) {
-      history.push(['/dashboard']);
-    }
   }
 
   return (

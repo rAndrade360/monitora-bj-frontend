@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import api from '../services/api';
 
 const AuthContext = createContext();
@@ -45,6 +46,19 @@ export default function AuthProvider({ children }) {
     setLoading(true);
     localStorage.clear();
     setUser(null);
+    setLoading(false);
+  }
+
+  if (loading) {
+    return (
+      <div className="container">
+        <div className="row">
+          <div className="col s12">
+            <h1 className="title">Carregando...</h1>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
