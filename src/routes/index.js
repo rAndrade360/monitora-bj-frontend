@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch } from 'react-router-dom';
+import { Switch, Redirect } from 'react-router-dom';
 import Route from './Route';
 import Home from '../pages/Home';
 import UserStore from '../pages/UserStore';
@@ -39,6 +39,7 @@ import UserShow from '../pages/UserShow';
 function Routes() {
   return (
     <Switch>
+      <Redirect exact from="/" to="/login" />
       <Route exact path="/login" component={Login} />
       <Route
         path="/dashboard/patients/:page?"
