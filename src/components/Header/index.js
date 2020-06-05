@@ -2,12 +2,14 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Materialize from 'materialize-css/dist/js/materialize';
 import logo from '../../assets/logo-header.svg';
+import { useAuth } from '../../contexts/Auth';
 
 import './styles.css';
 
 function Header() {
+  const { signOut } = useAuth();
   useEffect(() => {
-    const select = document.querySelector('.dropdown-trigger');
+    const select = document.querySelectorAll('.dropdown-trigger');
     const options = {
       inDuration: 300,
       outDuration: 300,
@@ -51,7 +53,7 @@ function Header() {
             <ul className="right hide-on-med-and-down">
               <li>
                 <Link to="/dashboard" className="text-black">
-                  Dashboard
+                  Relatório geral
                 </Link>
               </li>
               <li>
@@ -67,6 +69,16 @@ function Header() {
                 >
                   Pacientes
                   <i className="material-icons right">arrow_drop_down</i>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/login"
+                  className="text-black"
+                  onClick={() => signOut()}
+                >
+                  <i className="material-icons left">exit_to_app</i>
+                  sair
                 </Link>
               </li>
             </ul>
@@ -109,6 +121,12 @@ function Header() {
               </div>
             </li>
           </ul>
+        </li>
+        <li>
+          <Link to="/login" className="text-black" onClick={() => signOut()}>
+            <i className="material-icons left">exit_to_app</i>
+            sair
+          </Link>
         </li>
       </ul>
     </header>

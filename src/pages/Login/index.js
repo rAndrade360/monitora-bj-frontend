@@ -51,6 +51,7 @@ function Login({ history }) {
               className="validate"
               onChange={changeForm}
               value={form.acess_id}
+              required
             />
             <label htmlFor="acess_id">Id de acesso:</label>
           </div>
@@ -65,6 +66,7 @@ function Login({ history }) {
               className="validate"
               onChange={changeForm}
               value={form.password}
+              required
             />
             <label htmlFor="password">Senha:</label>
           </div>

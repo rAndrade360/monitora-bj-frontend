@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.URL_API,
+  baseURL: 'https://monitora-bj.herokuapp.com',
 });
 
 export default api;
