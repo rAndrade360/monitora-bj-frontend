@@ -48,11 +48,16 @@ function Routes() {
         isPrivate
       />
       <Route
-        path="/dashboard/patient/show/:id?"
+        path="/dashboard/patient/:id/show"
         component={UserShow}
         isPrivate
       />
-      <Route path="/dashboard/patient/store" component={UserStore} isPrivate />
+      <Route
+        path="/dashboard/patient/store"
+        exact
+        component={UserStore}
+        isPrivate
+      />
       <Route
         path="/dashboard/patient/update/:id?"
         component={UserUpdate}

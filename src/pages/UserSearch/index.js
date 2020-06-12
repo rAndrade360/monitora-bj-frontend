@@ -30,7 +30,7 @@ function UserSearch() {
   }
 
   function handleShowPatient(patientId) {
-    history.push(`/dashboard/patient/show/${patientId}`);
+    history.push(`/dashboard/patient/${patientId}/show`);
   }
 
   return (

@@ -5,7 +5,6 @@ import api from '../../services/api';
 import questions from '../../utils/questios.json';
 import {
   translateBooleanValue,
-  translateGenre,
   translateStaus,
   translateRisk,
 } from '../../utils/translate';
@@ -28,8 +27,8 @@ function ReportShow() {
       alert('Não foi possível buscar os dados do relatório!');
       return history.push('/dailyreport');
     }
-    const reportResponse = response.data.map((
-      {
+    const reportResponse = response.data.map(
+      ({
         patient_id,
         id,
         name,
@@ -52,7 +51,7 @@ function ReportShow() {
             name,
             cpf: formatCpf(cpf),
             phone_number: formatPhoneNumber(phone_number),
-            genre: translateGenre(genre),
+            genre,
             birthday: format(birthday, 'dd/MM/yyyy'),
             screening_day: format(screening_day, 'dd/MM/yyyy'),
             status: translateStaus(status),
@@ -64,16 +63,17 @@ function ReportShow() {
             ...rest,
           },
         };
-    });
+      }
+    );
     setReportData(reportResponse);
   }
   useEffect(() => {
     loadReportData(patientId, reportId);
-  }, [patientId, reportId]);
+  }, [loadReportData, patientId, reportId]);
 
-  async function onReadClick(){
+  async function onReadClick() {
     try {
-      await api.post(`/patient/dailyreport/${reportData[0].report.id}/readed`)
+      await api.post(`/patient/dailyreport/${reportData[0].report.id}/readed`);
     } catch (error) {
       alert('Não foi possível concluir a solicitação, verifique sua conexão!');
       return history.push('/dailyreport');
@@ -82,7 +82,7 @@ function ReportShow() {
     history.push('/dailyreport');
   }
 
-  async function onStatusUpdateClick(status, risk){
+  async function onStatusUpdateClick(status, risk) {
     try {
       await api.put(`/patient/${reportData[0].patient.id}/status/update`, {
         status,
@@ -90,7 +90,7 @@ function ReportShow() {
       });
     } catch (error) {
       alert('Não foi possível atualizar o status!');
-      return history.push('/dailyreport'); 
+      return history.push('/dailyreport');
     }
     alert('O status do paciente foi atualizado com sucesso!');
     await loadReportData(patientId, reportId);
@@ -103,11 +103,11 @@ function ReportShow() {
           <h1 className="title">Carregando...</h1>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="container" >
+    <div className="container">
       <div className="row">
         <div className="col s12">
           <h1 className="title center">Relatório diário individual</h1>
@@ -115,43 +115,46 @@ function ReportShow() {
       </div>
       <div className="row">
         <div className="col s12">
-          <p className="title center">{format(new Date(reportData[0].report.created_at), 'dd/MM/yyyy')}</p>
+          <p className="title center">
+            {format(new Date(reportData[0].report.created_at), 'dd/MM/yyyy')}
+          </p>
         </div>
       </div>
-        <div className="row">
-              <div className="col s6">
-                <button
-                  onClick={()=>onReadClick()}
-                  className="btn blue"
-                >
-                  Marcar como lido
-                </button>
-              </div>
-              <div className="col s6">
-              <button data-target="modal1" class="btn modal-trigger">
-                      Alterar status do paciente
-              </button>
-                <PopUpUpdateStatus
-                  patient={reportData[0].patient}
-                  onStatusUpdateClick={onStatusUpdateClick}
-                />
-              </div>
+      <div className="row">
+        <div className="col s6">
+          <button onClick={() => onReadClick()} className="btn blue">
+            Marcar como lido
+          </button>
         </div>
-        <div className="row">
-          <div className="col s12">
-            <h2 className="title">Dados pessoais</h2>
+        <div className="col s6">
+          <button data-target="modal1" class="btn modal-trigger">
+            Alterar status do paciente
+          </button>
+          <PopUpUpdateStatus
+            patient={reportData[0].patient}
+            onStatusUpdateClick={onStatusUpdateClick}
+          />
+        </div>
+      </div>
+      <div className="row">
+        <div className="col s12">
+          <h2 className="title">Dados pessoais</h2>
+          <div className="row">
             <div className="row">
-              <div className="row">
               <div className="col s12 m6">
                 <div className="row">
                   <p>Nome</p>
-                  <p><strong>{ reportData[0].patient.name }</strong></p>
+                  <p>
+                    <strong>{reportData[0].patient.name}</strong>
+                  </p>
                 </div>
               </div>
               <div className="col s12 m6">
                 <div className="row">
                   <p>Cpf</p>
-                  <p><strong>{ reportData[0].patient.cpf }</strong></p>
+                  <p>
+                    <strong>{reportData[0].patient.cpf}</strong>
+                  </p>
                 </div>
               </div>
             </div>
@@ -159,50 +162,60 @@ function ReportShow() {
               <div className="col s12 m6">
                 <div className="row">
                   <p>Data de Nascimento</p>
-                  <p><strong>{ reportData[0].patient.birthday }</strong></p>
+                  <p>
+                    <strong>{reportData[0].patient.birthday}</strong>
+                  </p>
                 </div>
               </div>
               <div className="col s12 m6">
                 <div className="row">
                   <p>Telefone</p>
-                  <p><strong>{ reportData[0].patient.phone_number }</strong></p>
+                  <p>
+                    <strong>{reportData[0].patient.phone_number}</strong>
+                  </p>
                 </div>
               </div>
-              </div>
-              <div className="row">
+            </div>
+            <div className="row">
               <div className="col s12 m6">
                 <div className="row">
                   <p>Status</p>
-                  <p><strong>{ reportData[0].patient.status }</strong></p>
+                  <p>
+                    <strong>{reportData[0].patient.status}</strong>
+                  </p>
                 </div>
               </div>
               <div className="col s12 m6">
                 <div className="row">
                   <p>Estado de risco</p>
-                  <p><strong>{ reportData[0].patient.risk }</strong></p>
+                  <p>
+                    <strong>{reportData[0].patient.risk}</strong>
+                  </p>
                 </div>
-              </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="row">
-          <div className="col s12">
-            <h1 className="title">Dados do relatório</h1>
-          </div>
-        </div>
-        <div className="row">
-        {questions.map(question => (
-            <div className="col s12 m6" key={question.id} >
-              <div className="row">
-              <p className="">{question.label}</p>
-              <p className=""><strong>{ reportData[0].report[question.value]}</strong></p>
-              </div>
-          </div>
-        ))}
+      </div>
+      <div className="row">
+        <div className="col s12">
+          <h1 className="title">Dados do relatório</h1>
         </div>
       </div>
-  )
+      <div className="row">
+        {questions.map((question) => (
+          <div className="col s12 m6" key={question.id}>
+            <div className="row">
+              <p className="">{question.label}</p>
+              <p className="">
+                <strong>{reportData[0].report[question.value]}</strong>
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default ReportShow;

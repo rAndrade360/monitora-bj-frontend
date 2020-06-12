@@ -5,7 +5,6 @@ import ReportItem from '../../components/ReportItem';
 import { useAuth } from '../../contexts/Auth';
 import api from '../../services/api';
 import {
-  translateGenre,
   translateStaus,
   translateRisk,
   translateBooleanValue,
@@ -26,8 +25,8 @@ function DailyReport() {
       return;
     }
 
-    const reportResponse = response.data.map((
-      {
+    const reportResponse = response.data.map(
+      ({
         patient_id,
         id,
         name,
@@ -50,7 +49,7 @@ function DailyReport() {
             name,
             cpf,
             phone_number,
-            genre: translateGenre(genre),
+            genre,
             birthday: format(birthday, 'dd/MM/yyyyy'),
             screening_day: format(screening_day, 'dd/MM/yyyy'),
             status: translateStaus(status),
@@ -62,7 +61,8 @@ function DailyReport() {
             ...rest,
           },
         };
-    });
+      }
+    );
     setReports(reportResponse);
   }
   useEffect(() => {

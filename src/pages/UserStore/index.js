@@ -6,15 +6,26 @@ import { parse } from 'date-fns';
 import Input from '../../components/Input';
 import api from '../../services/api';
 import i18n from '../../utils/i18n';
+import DailyReportPopUp from '../../components/DailyReportPopUp';
 
 // import { Container } from './styles';
 
 function UserStore() {
   const [formSelect, setFormSelect] = useState({
-    genre: 'male',
-    risk: 'low',
-    status: 'suspect',
+    genre: 'masculino',
+    risk: 'baixo',
+    status: 'suspeito',
+    test_type: 'teste_rapido_anticorpo',
+    test_status: 'solicitado',
   });
+  const [checkbox, setCheckbox] = useState({
+    is_foreign: false,
+    healthcare_professional: false,
+    condicao: [],
+    recent_contact: false,
+    recent_travel: false,
+  });
+  const [dailyReportChecked, setDailyReportChecked] = useState({});
   const history = useHistory();
   useEffect(() => {
     const elemsDatetime = document.querySelectorAll('.datepicker');
@@ -30,33 +41,64 @@ function UserStore() {
     });
   }
 
+  function handleChangeCheckbox(e) {
+    if (e.target.name === 'condicao') {
+      const checkCondicao = checkbox.condicao;
+      checkCondicao.includes(e.target.value)
+        ? checkCondicao.slice(checkCondicao.indexOf(e.target.value), 1)
+        : checkCondicao.push(e.target.value);
+      setCheckbox({ ...checkbox, condicao: checkCondicao });
+    } else {
+      setCheckbox({
+        ...checkbox,
+        [e.target.name]: !e.target.checked,
+      });
+    }
+  }
+
   async function handleSubmit(data) {
-    data.patient.genre = formSelect.genre;
-    data.patient.risk = formSelect.risk;
-    data.patient.status = formSelect.status;
-    data.patient.birthday = parse(
-      data.patient.birthday,
+    let sendData = {
+      ...data,
+      test_data: {
+        test_status: formSelect.test_status,
+        test_type: formSelect.test_type,
+      },
+    };
+    sendData.patient.genre = formSelect.genre;
+    sendData.patient.phone_number = `+55${sendData.patient.phone_number}`;
+    sendData.patient.whatsapp =
+      sendData.patient.whatsapp || sendData.patient.phone_number;
+    sendData.fixed_report.risk = formSelect.risk;
+    sendData.fixed_report.status = formSelect.status;
+    sendData.conditions = checkbox.condicao;
+    sendData.patient.healthcare_professional = checkbox.healthcare_professional;
+    sendData.patient.is_foreign = checkbox.is_foreign;
+    sendData.patient.birthday = parse(
+      sendData.patient.birthday,
       'dd/MM/yyyy',
       new Date()
     );
-    data.patient.screening_day = parse(
-      data.patient.screening_day,
+    sendData.fixed_report.symptom_onset_date = parse(
+      sendData.fixed_report.symptom_onset_date,
       'dd/MM/yyyy',
       new Date()
     );
-    data.fixed_report.recent_travel = data.fixed_report.recent_travel
-      ? true
-      : false;
-    data.fixed_report.recent_contact = data.fixed_report.recent_contact
-      ? true
-      : false;
+    sendData.fixed_report.screening_day = parse(
+      sendData.fixed_report.screening_day,
+      'dd/MM/yyyy',
+      new Date()
+    );
+    sendData.fixed_report.recent_travel = checkbox.recent_travel;
+    sendData.fixed_report.recent_contact = checkbox.recent_contact;
+    sendData.daily_report = dailyReportChecked;
     try {
-      await api.post('/patients', data);
+      await api.post('/patients', sendData);
     } catch (err) {
       alert(
         'Não foi possível cadastrar o novo paciente! Tente novamente mais tarde.'
       );
       history.push('/dashboard/patients/1');
+      return;
     }
     alert('Paciente cadastrado com sucesso!');
     history.push('/dashboard/patients/1');
@@ -87,6 +129,16 @@ function UserStore() {
                   />
                 </div>
                 <div className="input-field col s12 m6">
+                  <label htmlFor="patient_monther_name">Nome da mãe*</label>
+                  <Input
+                    id="patient_monther_name"
+                    name="patient.monther_name"
+                    type="text"
+                    className="validate"
+                    required
+                  />
+                </div>
+                <div className="input-field col s12 m6">
                   <label htmlFor="patient_cpf">Cpf do paciente*</label>
                   <Input
                     placeholder="000.000.000-00"
@@ -98,6 +150,24 @@ function UserStore() {
                   />
                 </div>
                 <div className="input-field col s12 m6">
+                  <label htmlFor="patient_cbo">Cbo</label>
+                  <Input
+                    id="patient_cbo"
+                    name="patient.cbo"
+                    type="text"
+                    className="validate"
+                  />
+                </div>
+                <div className="input-field col s12 m6">
+                  <label htmlFor="patient_cns">Cns</label>
+                  <Input
+                    id="patient_cns"
+                    name="patient.cns"
+                    type="text"
+                    className="validate"
+                  />
+                </div>
+                <div className="input-field col s12 m6">
                   <label htmlFor="patient_phone">Telefone*</label>
                   <Input
                     placeholder="(00)00000-0000"
@@ -106,6 +176,25 @@ function UserStore() {
                     type="number"
                     className="validate"
                     required
+                  />
+                </div>
+                <div className="input-field col s12 m6">
+                  <label htmlFor="whatsapp">WhatsApp</label>
+                  <Input
+                    placeholder="(00)00000-0000"
+                    id="whatsapp"
+                    name="patient.whatsapp"
+                    type="number"
+                    className="validate"
+                  />
+                </div>
+                <div className="input-field col s12 m6">
+                  <label htmlFor="passport">Passaporte</label>
+                  <Input
+                    id="passport"
+                    name="patient.passport"
+                    type="number"
+                    className="validate"
                   />
                 </div>
                 <div className="input-field col s12 m6">
@@ -131,61 +220,48 @@ function UserStore() {
                   />
                 </div>
                 <div className="input-field col s12 m6">
-                  <label htmlFor="patient_screening_day">
-                    Data da triagem*
-                  </label>
+                  <label htmlFor="patient_origin_country">País de origem</label>
                   <Input
-                    placeholder="01/01/2020"
-                    id="patient_screening_day"
-                    name="patient.screening_day"
+                    id="patient_origin_country"
+                    name="patient.origin_country"
                     type="text"
-                    className="datepicker validate"
-                    required
-                  />
-                </div>
-                <div className="input-field col s12 m6">
-                  <select
-                    value={formSelect.risk}
-                    name="risk"
-                    onChange={handleChangeSelect}
-                  >
-                    <option value="low">baixo</option>
-                    <option value="medium">médio</option>
-                    <option value="high">alto</option>
-                    <option value="critic">crítico</option>
-                  </select>
-                  <label>Risco do Paciente*</label>
-                </div>
-                <div className="input-field col s12 m6">
-                  <select
-                    value={formSelect.status}
-                    name="status"
-                    onChange={handleChangeSelect}
-                  >
-                    <option value="suspect">suspeito</option>
-                    <option value="monitored">monitorado</option>
-                    <option value="infected">infectado</option>
-                    <option value="discarded_by_isolation">
-                      descartado por tempo de isolamento
-                    </option>
-                    <option value="discarded_by_test">
-                      descartado por teste
-                    </option>
-                    <option value="cured">recuperado</option>
-                    <option value="death">óbito</option>
-                  </select>
-                  <label>Status do Paciente*</label>
-                </div>
-                <div className="input-field col s12 m6">
-                  <label htmlFor="patient_password">Nova senha*</label>
-                  <Input
-                    placeholder="senha 123"
-                    id="patient_password"
-                    name="patient.password"
-                    type="password"
                     className="validate"
-                    required
                   />
+                </div>
+                <div className="col s12 m6">
+                  <p className="title">O paciente é profissional de saúde?</p>
+                  <div className="row">
+                    <div className="switch col s12 m6">
+                      <label>
+                        Não
+                        <input
+                          type="checkbox"
+                          name="healthcare_professional"
+                          onChange={handleChangeCheckbox}
+                        />
+                        <span className="lever"></span>
+                        Sim
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div className="col s12 m6">
+                  <p className="title">O paciente é estrangeiro?</p>
+                  <div className="row">
+                    <div className="switch col s12 m6">
+                      <label>
+                        Não
+                        <input
+                          type="checkbox"
+                          name="is_foreign"
+                          value={true}
+                          onChange={handleChangeCheckbox}
+                        />
+                        <span className="lever"></span>
+                        Sim
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -238,20 +314,251 @@ function UserStore() {
                   />
                 </div>
               </div>
+              <div className="row">
+                <div className="input-field col s12 m6">
+                  <label htmlFor="address_cep">CEP*</label>
+                  <Input
+                    placeholder="65380000"
+                    id="address_cep"
+                    name="address.cep"
+                    type="number"
+                    className="validate"
+                    required
+                  />
+                </div>
+              </div>
             </div>
             <div className="row">
               <legend>Dados da triagem</legend>
               <div className="row">
+                <div className="input-field col s12 m6">
+                  <label htmlFor="fixed_report_screening_day">
+                    Data da triagem*
+                  </label>
+                  <Input
+                    id="fixed_report_screening_day"
+                    name="fixed_report.screening_day"
+                    type="text"
+                    className="datepicker validate"
+                    required
+                  />
+                </div>
+                <div className="input-field col s12 m6">
+                  <label htmlFor="fixed_report_symptom_onset_date">
+                    Data em que começaram os sintomas*
+                  </label>
+                  <Input
+                    id="fixed_report_symptom_onset_date"
+                    name="fixed_report.symptom_onset_date"
+                    type="text"
+                    className="datepicker validate"
+                    required
+                  />
+                </div>
+                <div className="row">
+                  <div className="col s12 m6">
+                    <div className="input-field required">
+                      <p>Sintomas do paciente</p>
+                      <button
+                        type="button"
+                        data-target="modal2"
+                        className="modal-trigger btn"
+                      >
+                        Clique para marcar os sintomas
+                      </button>
+                      <DailyReportPopUp
+                        checked={dailyReportChecked}
+                        setChecked={setDailyReportChecked}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="input-field col s12 m6">
+                  <select
+                    value={formSelect.risk}
+                    name="risk"
+                    onChange={handleChangeSelect}
+                  >
+                    <option value="baixo">baixo</option>
+                    <option value="medio">médio</option>
+                    <option value="alto">alto</option>
+                    <option value="critico">crítico</option>
+                  </select>
+                  <label>Risco do Paciente*</label>
+                </div>
+                <div className="input-field col s12 m6">
+                  <select
+                    value={formSelect.status}
+                    name="status"
+                    onChange={handleChangeSelect}
+                  >
+                    <option value="suspeito">suspeito</option>
+                    <option value="internado">internado</option>
+                    <option value="descartado_por_isolamento">
+                      descartado por tempo de isolamento
+                    </option>
+                    <option value="descartado_por_teste">
+                      descartado por teste
+                    </option>
+                    <option value="em_tratamento_domiciliar">
+                      em tratamento domiciliar
+                    </option>
+                    <option value="internado_em_uti">internado em UTI</option>
+                    <option value="ignorado">ignorado</option>
+                    <option value="cancelado">cancelado</option>
+                    <option value="curado">recuperado</option>
+                    <option value="obito">óbito</option>
+                  </select>
+                  <label>Status do Paciente*</label>
+                </div>
+                <div className="input-field col s12 m6">
+                  <p className="title">Condições</p>
+                  <div className="col s12">
+                    <p className="">
+                      Doenças respiratórias crônicas descompensadas
+                    </p>
+                    <div className="row">
+                      <div className="switch col s12 m6">
+                        <label>
+                          Não
+                          <input
+                            type="checkbox"
+                            name="condicao"
+                            value={1}
+                            onChange={handleChangeCheckbox}
+                          />
+                          <span className="lever"></span>
+                          Sim
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col s12">
+                    <p className="">Doenças cardíacas crônicas</p>
+                    <div className="row">
+                      <div className="switch col s12 m6">
+                        <label>
+                          Não
+                          <input
+                            type="checkbox"
+                            name="condicao"
+                            onChange={handleChangeCheckbox}
+                            value={2}
+                          />
+                          <span className="lever"></span>
+                          Sim
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col s12">
+                    <p className="">Diabetes</p>
+                    <div className="row">
+                      <div className="switch col s12 m6">
+                        <label>
+                          Não
+                          <input
+                            type="checkbox"
+                            name="condicao"
+                            onChange={handleChangeCheckbox}
+                            value={3}
+                          />
+                          <span className="lever"></span>
+                          Sim
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col s12">
+                    <p className="">
+                      Doenças renais crônicas em estado avançado (graus 3, 4 e
+                      5)
+                    </p>
+                    <div className="row">
+                      <div className="switch col s12 m6">
+                        <label>
+                          Não
+                          <input
+                            type="checkbox"
+                            name="condicao"
+                            onChange={handleChangeCheckbox}
+                            value={4}
+                          />
+                          <span className="lever"></span>
+                          Sim
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col s12">
+                    <p className="">Imunosupressão</p>
+                    <div className="row">
+                      <div className="switch col s12 m6">
+                        <label>
+                          Não
+                          <input
+                            onChange={handleChangeCheckbox}
+                            type="checkbox"
+                            name="condicao"
+                            value={5}
+                          />
+                          <span className="lever"></span>
+                          Sim
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col s12">
+                    <p className="">Gestante de alto risco</p>
+                    <div className="row">
+                      <div className="switch col s12 m6">
+                        <label>
+                          Não
+                          <input
+                            type="checkbox"
+                            name="condicao"
+                            onChange={handleChangeCheckbox}
+                            value={6}
+                          />
+                          <span className="lever"></span>
+                          Sim
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col s12">
+                    <p className="">
+                      Portador de doenças cromossômicas ou estado de fragilidade
+                      imunológica
+                    </p>
+                    <div className="row">
+                      <div className="switch col s12 m6">
+                        <label>
+                          Não
+                          <input
+                            type="checkbox"
+                            name="condicao"
+                            onChange={handleChangeCheckbox}
+                            value={7}
+                          />
+                          <span className="lever"></span>
+                          Sim
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div className="col s12 m6">
                   <p className="title">O paciente viajou recentemente?</p>
                   <div className="row">
                     <div className="switch col s12 m6">
                       <label>
                         Não
-                        <Input
+                        <input
                           type="checkbox"
-                          name="fixed_report.recent_travel"
+                          name="recent_travel"
                           value={true}
+                          onChange={handleChangeCheckbox}
                         />
                         <span className="lever"></span>
                         Sim
@@ -270,7 +577,6 @@ function UserStore() {
                   />
                 </div>
               </div>
-
               <div className="row">
                 <div className="col s12 m6">
                   <label className="title">
@@ -280,15 +586,55 @@ function UserStore() {
                     <div className="switch col s12 m6">
                       <label>
                         Não
-                        <Input
+                        <input
                           type="checkbox"
-                          name="fixed_report.recent_contact"
-                          value={true}
+                          name="recent_contact"
+                          value="true"
+                          onChange={handleChangeCheckbox}
                         />
                         <span className="lever"></span>
                         Sim
                       </label>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="row">
+              <legend>Dados de teste</legend>
+              <div className="row">
+                <div className="col s12 m6">
+                  <div className="input-field col s12 m6">
+                    <select
+                      value={formSelect.test_status}
+                      name="test_status"
+                      onChange={handleChangeSelect}
+                    >
+                      <option value="solicitado">solicitado</option>
+                      <option value="coletado">coletado</option>
+                      <option value="concluido">concluído</option>
+                    </select>
+                    <label>Status do Teste*</label>
+                  </div>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col s12 m6">
+                  <div className="input-field col s12 m6">
+                    <select
+                      value={formSelect.test_type}
+                      name="test_type"
+                      onChange={handleChangeSelect}
+                    >
+                      <option value="teste_rapido_anticorpo">
+                        teste rápido - anticorpo
+                      </option>
+                      <option value="teste_rapido_antigeno">
+                        teste_rapido_antigeno
+                      </option>
+                      <option value="rt_pcr">RT - PCR</option>
+                    </select>
+                    <label>Tipo de Teste*</label>
                   </div>
                 </div>
               </div>

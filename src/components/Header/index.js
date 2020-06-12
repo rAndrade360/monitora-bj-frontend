@@ -32,9 +32,7 @@ function Header() {
           </Link>
         </li>
         <li>
-          <Link
-            to="dashboard/patient/store"
-            className="text-black">
+          <Link to="/dashboard/patient/store" className="text-black">
             Cadastrar
           </Link>
         </li>
@@ -112,10 +110,7 @@ function Header() {
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      to="/dashboard/patient/store"
-                      className="text-black"
-                    >
+                    <Link to="/dashboard/patient/store" className="text-black">
                       Cadastrar
                     </Link>
                   </li>

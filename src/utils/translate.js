@@ -1,24 +1,39 @@
 export const translateStaus = (status) => {
   switch (status) {
-    case 'suspect':
-      return 'suspeito';
-    case 'monitored':
-      return 'monitorado';
-    case 'infected':
-      return 'infectado';
-    case 'discarded_by_isolation':
+    case 'descartado_por_isolamento':
       return 'descartado por isolamento';
-
-    case 'discarded_by_test':
+    case 'descartado_por_teste':
       return 'descartado por teste';
-    case 'cured':
-      return 'recuperado';
-    case 'death':
+    case 'internado_em_uti':
+      return 'internado em UTI';
+    case 'obito':
       return 'óbito';
     default:
-      return 'Não analisado'
+      return status;
   }
-}
+};
+
+export const translateFinalClassification = (status) => {
+  switch (status) {
+    case 'confirmacao_laboratorial':
+      return 'Confirmação laboratorial';
+    case 'confirmacao_clinico_epidemiologico':
+      return 'Confirmação clínico epidemiológico';
+    default:
+      return status;
+  }
+};
+
+export const translateTestResult = (result) => {
+  switch (result) {
+    case 1:
+      return 'positivo';
+    case 0:
+      return 'negativo';
+    default:
+      return 'Não realizado';
+  }
+};
 
 export const translateStausToEnglish = (status) => {
   switch (status) {
@@ -30,7 +45,6 @@ export const translateStausToEnglish = (status) => {
       return 'infected';
     case 'descartado por isolamento':
       return 'discarded_by_isolation';
-
     case 'descartado por teste':
       return 'discarded_by_test';
     case 'recuperado':
@@ -38,24 +52,20 @@ export const translateStausToEnglish = (status) => {
     case 'óbito':
       return 'death';
     default:
-      return 'None'
+      return 'None';
   }
-}
+};
 
 export const translateRisk = (status) => {
   switch (status) {
-    case 'low':
-      return 'baixo';
-    case 'medium':
-      return 'médio';
-    case 'high':
-      return 'alto';
-    case 'critic':
+    case 'critico':
       return 'crítico';
+    case 'medio':
+      return 'médio';
     default:
-      return 'Não analisado'
+      return status;
   }
-}
+};
 
 export const translateRiskToEnglish = (status) => {
   switch (status) {
@@ -68,41 +78,49 @@ export const translateRiskToEnglish = (status) => {
     case 'crítico':
       return 'critic';
     default:
-      return 'None'
+      return 'None';
   }
-}
+};
+
+export const translateTestType = (status) => {
+  switch (status) {
+    case 'teste_rapido_anticorpo':
+      return 'teste rápido - anticorpo';
+    case 'teste_rapido_antigeno':
+      return 'teste rápido - antígeno';
+    case 'rt_prc':
+      return 'RT - PCR';
+    default:
+      return 'Não solicitado';
+  }
+};
 
 export const translateStausAndReturnColor = (status) => {
   switch (status) {
-    case 'suspect':
-      return ['suspeito', '#FFF505aa', ];
-    case 'monitored':
-      return ['monitorado',  '#FF9B05aa', ];
-    case 'infected':
-      return ['infectado', '#FF0505aa', ];
-    case 'discarded_by_isolation':
-      return ['descartado por isolamento', '#7159c1aa',];
-    case 'discarded_by_test':
-      return ['descartado por teste', '#00aeffaa', ];
-    case 'cured':
-      return ['recuperado', '#05FF1Eaa', ];
-    case 'death':
+    case 'suspeito':
+      return [status, '#FFF505aa'];
+    case 'internado':
+      return [status, '#FF9B05aa'];
+    case 'descartado_por_isolamento':
+      return ['descartado por isolamento', '#7159c1aa'];
+    case 'descartado_por_teste':
+      return ['descartado por teste', '#00aeffaa'];
+    case 'curado':
+      return [status, '#05FF1Eaa'];
+    case 'obito':
       return ['óbito', '#33333333'];
+    case 'em_tratamento_domiciliar':
+      return ['em tratamento domiciliar', '#ee75a5aa'];
+    case 'internado_em_uti':
+      return ['internado em UTI', '#FF0505aa'];
+    case 'ignorado':
+      return [status, '#bebebeaa'];
+    case 'cancelado':
+      return [status, '#e2f06faa'];
     default:
-      return ['Não analisado', '#aaaa']
+      return ['Não analisado', '#aaaa'];
   }
-}
-
-export const translateGenre = (genre) => {
-  switch (genre) {
-    case 'male':
-      return 'masculino';
-    case 'female':
-      return 'feminino';
-    default: 
-      return 'Não definido'
-  }
-}
+};
 
 export const translateBooleanValue = (data) => {
   switch (data) {
@@ -110,7 +128,7 @@ export const translateBooleanValue = (data) => {
       return 'Sim';
     case 0:
       return 'Não';
-    default: 
-      return data
+    default:
+      return data;
   }
-}
+};
