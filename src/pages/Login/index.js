@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import image from '../../assets/img.svg';
 import logo from '../../assets/logo.svg';
 import { useAuth } from '../../contexts/Auth';

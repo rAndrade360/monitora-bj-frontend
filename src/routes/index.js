@@ -15,7 +15,6 @@ import UserShow from '../pages/UserShow';
 import { useAuth } from '../contexts/Auth';
 
 function Routes() {
-  const { user } = useAuth();
   return (
     <Switch>
       <Redirect exact from="/" to="/login" />

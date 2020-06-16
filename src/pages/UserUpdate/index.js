@@ -15,7 +15,6 @@ function UserUpdate() {
     risk: '',
     status: '',
   });
-  const [loading, setLoading] = useState(true);
   const [initialData, setInitialData] = useState({});
   const history = useHistory();
   const { id } = useParams();
@@ -61,7 +60,6 @@ function UserUpdate() {
           complement: patientData.complement,
         },
       });
-      setLoading(false);
     }
 
     loadPatientData();
