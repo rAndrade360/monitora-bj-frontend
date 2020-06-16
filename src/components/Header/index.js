@@ -75,13 +75,9 @@ function Header() {
                 alt="Logo do monitora-BJ"
               />
             </a>
-            <button
-              style={{ border: 0 }}
-              data-target="mobile-demo"
-              className="sidenav-trigger"
-            >
+            <a href="#" data-target="mobile-demo" className="sidenav-trigger">
               <i className="material-icons text-black">menu</i>
-            </button>
+            </a>
             <ul className="right hide-on-med-and-down">
               <li>
                 <Link
