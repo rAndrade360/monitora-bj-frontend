@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { differenceInDays } from 'date-fns';
+import { differenceInDays, parseISO } from 'date-fns';
 import { translateStausAndReturnColor } from '../../utils/translate';
 import { formatCpf } from '../../utils/formate';
 
@@ -8,7 +8,10 @@ import './styles.css';
 function ListItemPatient({ patient, handleShowPatient }) {
   const [days, setDays] = useState({ days: '', color: '' });
   useEffect(() => {
-    const daysCount = differenceInDays(new Date(), patient.symptom_onset_date);
+    const daysCount = differenceInDays(
+      new Date(),
+      parseISO(patient.symptom_onset_date)
+    );
     patient.test_status === 'solicitado'
       ? daysCount >= 10
         ? setDays({ days: `${daysCount} dias`, color: '#F58989' })

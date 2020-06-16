@@ -3,7 +3,7 @@ import { Form } from '@unform/web';
 import Materialize from 'materialize-css';
 import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { parse, format } from 'date-fns';
+import { parse, format, parseISO } from 'date-fns';
 import Input from '../../components/Input';
 import api from '../../services/api';
 import { useAuth } from '../../contexts/Auth';
@@ -51,7 +51,7 @@ function UserUpdate() {
           name: patientData.name,
           monther_name: patientData.monther_name,
           phone_number: patientData.phone_number,
-          birthday: format(patientData.birthday, 'dd/MM/yyyy'),
+          birthday: format(parseISO(patientData.birthday), 'dd/MM/yyyy'),
         },
         address: {
           address: patientData.address,
