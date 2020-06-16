@@ -80,6 +80,7 @@ function UserSearch() {
               <th>Nome</th>
               <th>CPF</th>
               <th>Status</th>
+              <th>Tempo aguardando teste</th>
               <th>Ação</th>
             </tr>
           </thead>

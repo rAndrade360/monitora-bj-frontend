@@ -13,19 +13,22 @@ export default function AuthProvider({ children }) {
       const storedUser = localStorage.getItem('@AuthUser');
       const storedToken = localStorage.getItem('@AuthToken');
       if (storedUser && storedToken) {
-        setUser(JSON.parse(storedUser));
+        const myUser = JSON.parse(storedUser);
+        setUser(myUser);
         setToken(storedToken);
         api.defaults.headers.common['authorization'] = storedToken;
+        api.defaults.headers.common.strategy_id =
+          myUser.permission === 'secretary' ? null : myUser.id;
       }
       setLoading(false);
     }
     loadStoredData();
   }, []);
-  async function signIn({ acess_id, password }) {
+  async function signIn({ access_id, password }) {
     let response;
     try {
       response = await api.post('/secretary/login', {
-        acess_id,
+        access_id,
         password,
       });
     } catch (error) {
@@ -39,6 +42,10 @@ export default function AuthProvider({ children }) {
     api.defaults.headers.common[
       'authorization'
     ] = `Bearer ${response.data.token}`;
+    api.defaults.headers.common.strategy_id =
+      response.data.user.permission === 'secretary'
+        ? null
+        : response.data.user.id;
     setLoading(false);
   }
 

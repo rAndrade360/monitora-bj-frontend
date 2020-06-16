@@ -21,7 +21,7 @@ function UserShow() {
   const [patientData, setPatientData] = useState({ conditions: [] });
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const history = useHistory();
 
   useEffect(() => {
@@ -53,7 +53,7 @@ function UserShow() {
       setLoading(false);
     }
     loadPatientData(id);
-  }, [id, token]);
+  }, [id, token, user]);
 
   async function deletePatient(patientId) {
     try {
@@ -121,41 +121,47 @@ function UserShow() {
           <h1 className="center title">Dados do Paciente</h1>
         </div>
       </div>
-      <div className="row">
-        <div className="col s6 m4 left">
-          <button
-            className="btn green"
-            onClick={() => {
-              updatePatient(id);
-            }}
-          >
-            Alterar dados <i className="material-icons right">update</i>
-          </button>
-        </div>
-        <div className="col s6 m4 right">
-          <PopUpDelete
-            trigger={
-              <button className="btn red">
-                Deletar dados <i className="material-icons right">delete</i>
+      {user.permission !== 'test_center' ? (
+        <>
+          <div className="row">
+            <div className="col s6 m4 left">
+              <button
+                className="btn green"
+                onClick={() => {
+                  updatePatient(id);
+                }}
+              >
+                Alterar dados <i className="material-icons right">update</i>
               </button>
-            }
-            patient={patientData}
-            patientDelete={deletePatient}
-          />
+            </div>
+            <div className="col s6 m4 right">
+              <PopUpDelete
+                trigger={
+                  <button className="btn red">
+                    Deletar dados <i className="material-icons right">delete</i>
+                  </button>
+                }
+                patient={patientData}
+                patientDelete={deletePatient}
+              />
+            </div>
+          </div>
+        </>
+      ) : null}
+      {user.permission !== 'basic_unity' ? (
+        <div className="row">
+          <div className="col s12 m4">
+            <button className="btn blue modal-trigger" data-target="modalTest">
+              Atualizar dados de teste{' '}
+              <i className="material-icons right">science</i>
+            </button>
+            <UpdateTestDataPopUp
+              testData={patientData}
+              onStatusUpdateClick={handleTestUpdate}
+            />
+          </div>
         </div>
-      </div>
-      <div className="row">
-        <div className="col s12 m4">
-          <button className="btn blue modal-trigger" data-target="modalTest">
-            Atualizar dados de teste{' '}
-            <i className="material-icons right">science</i>
-          </button>
-          <UpdateTestDataPopUp
-            testData={patientData}
-            onStatusUpdateClick={handleTestUpdate}
-          />
-        </div>
-      </div>
+      ) : null}
       <div className="row">
         <div className="col s12">
           <h2 className="title">Dados Pessoais</h2>

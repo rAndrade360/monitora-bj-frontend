@@ -3,8 +3,8 @@
 }
 
 .logo-style{
-  width: 50%;
-  margin-top: 10px;
+  max-height: 64px !important;
+  padding: 15px 0 !important ;
 }
 
 @media only screen and (max-width: 600px){

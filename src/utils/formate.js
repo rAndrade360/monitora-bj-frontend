@@ -7,3 +7,7 @@ export const formatPhoneNumber = (phoneNumber) => {
   let formatedNumber = phoneNumber.replace(/(\d{2})(\d{2})(\d)/, '$1 ($2)$3');
   return formatedNumber.replace(/(\d)(\d{4})$/, '$1-$2');
 };
+
+export const normalizeCpf = (cpf) => {
+  return cpf.replace(/[^\d]/g, '');
+};

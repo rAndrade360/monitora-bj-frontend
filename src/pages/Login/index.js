@@ -16,7 +16,7 @@ function Login() {
   function handleSubmit(e) {
     e.preventDefault();
     signIn({
-      acess_id: form.acess_id,
+      access_id: form.acess_id,
       password: form.password,
     });
   }
@@ -42,7 +42,6 @@ function Login() {
         <div className="row">
           <div className="input-field col s12">
             <input
-              placeholder="Infome seu id"
               name="acess_id"
               id="acess_id"
               type="text"
@@ -57,7 +56,6 @@ function Login() {
         <div className="row">
           <div className="input-field col s12">
             <input
-              placeholder="Infome sua senha"
               name="password"
               id="password"
               type="password"

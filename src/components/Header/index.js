@@ -7,7 +7,7 @@ import { useAuth } from '../../contexts/Auth';
 import './styles.css';
 
 function Header() {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   useEffect(() => {
     const select = document.querySelectorAll('.dropdown-trigger');
     const options = {
@@ -17,8 +17,8 @@ function Header() {
       hover: true,
     };
     Materialize.Dropdown.init(select, options);
-    var elems = document.querySelectorAll('.sidenav');
-    var elemsCollapsible = document.querySelectorAll('.collapsible');
+    const elems = document.querySelectorAll('.sidenav');
+    const elemsCollapsible = document.querySelectorAll('.collapsible');
     Materialize.Collapsible.init(elemsCollapsible);
     Materialize.Sidenav.init(elems);
   }, []);
@@ -31,8 +31,36 @@ function Header() {
             Buscar
           </Link>
         </li>
+        {user.permission !== 'test_center' ? (
+          <li>
+            <Link to="/dashboard/patient/store" className="text-black">
+              Cadastrar
+            </Link>
+          </li>
+        ) : null}
+      </ul>
+      <ul id="dropdown3" className="dropdown-content">
         <li>
-          <Link to="/dashboard/patient/store" className="text-black">
+          <Link to="/dashboard" className="text-black">
+            Relatório geral
+          </Link>
+        </li>
+        {user.permission !== 'test_center' ? (
+          <li>
+            <Link to="/dailyreport" className="text-black">
+              Relatório diário
+            </Link>
+          </li>
+        ) : null}
+      </ul>
+      <ul id="dropdown2" className="dropdown-content">
+        <li>
+          <Link to="/dashboard/strategies" className="text-black">
+            Buscar
+          </Link>
+        </li>
+        <li>
+          <Link to="/dashboard/strategy/store" className="text-black">
             Cadastrar
           </Link>
         </li>
@@ -40,25 +68,25 @@ function Header() {
       <nav className="white">
         <div className="container">
           <div className="nav-wrapper">
-            <Link to="/dashboard" className="brand-logo">
+            <a href="/dashboard" className="brand-logo">
               <img
                 src={logo}
                 className="logo-style"
                 alt="Logo do monitora-BJ"
               />
-            </Link>
-            <a data-target="mobile-demo" className="sidenav-trigger">
+            </a>
+            <a href="#" data-target="mobile-demo" className="sidenav-trigger">
               <i className="material-icons text-black">menu</i>
             </a>
             <ul className="right hide-on-med-and-down">
               <li>
-                <Link to="/dashboard" className="text-black">
-                  Relatório geral
-                </Link>
-              </li>
-              <li>
-                <Link to="/dailyreport" className="text-black">
-                  Relatório diário
+                <Link
+                  className="dropdown-trigger text-black"
+                  to={`/dashboard`}
+                  data-target="dropdown3"
+                >
+                  Relatórios
+                  <i className="material-icons right">arrow_drop_down</i>
                 </Link>
               </li>
               <li>
@@ -71,6 +99,19 @@ function Header() {
                   <i className="material-icons right">arrow_drop_down</i>
                 </Link>
               </li>
+              {user.permission === 'secretary' ? (
+                <li>
+                  <Link
+                    className="dropdown-trigger text-black"
+                    to={`/dashboard/patients/1`}
+                    data-target="dropdown2"
+                  >
+                    Estratégias
+                    <i className="material-icons right">arrow_drop_down</i>
+                  </Link>
+                </li>
+              ) : null}
+
               <li>
                 <Link
                   to="/login"
@@ -86,24 +127,35 @@ function Header() {
         </div>
       </nav>
       <ul className="sidenav" id="mobile-demo">
-        <li>
-          <Link to="/dashboard" className="text-black">
-            Dashboard
-          </Link>
-        </li>
-        <li>
-          <Link to="/dailyreport" className="text-black">
-            Relatório diário
-          </Link>
-        </li>
         <li className="no-padding">
           <ul className="collapsible collapsible-accordion">
+            <li>
+              <button className="collapsible-header">
+                Relatórios <i className="material-icons">arrow_drop_down</i>
+              </button>
+              <div className="collapsible-body">
+                <ul className="sidenav-close">
+                  <li>
+                    <Link to="/dashboard" className="text-black">
+                      Relatório geral
+                    </Link>
+                  </li>
+                  {user.permission !== 'test_center' ? (
+                    <li>
+                      <Link to="/dailyreport" className="text-black">
+                        Relatório diário
+                      </Link>
+                    </li>
+                  ) : null}
+                </ul>
+              </div>
+            </li>
             <li>
               <button className="collapsible-header">
                 Pacientes <i className="material-icons">arrow_drop_down</i>
               </button>
               <div className="collapsible-body">
-                <ul>
+                <ul className="sidenav-close">
                   <li>
                     <Link to="/dashboard/patients/1" className="text-black">
                       Buscar
@@ -117,9 +169,34 @@ function Header() {
                 </ul>
               </div>
             </li>
+            {user.permission === 'secretary' ? (
+              <li>
+                <button className="collapsible-header">
+                  Estratégias <i className="material-icons">arrow_drop_down</i>
+                </button>
+                <div className="collapsible-body">
+                  <ul className="sidenav-close">
+                    <li>
+                      <Link to="/dashboard/strategies" className="text-black">
+                        Buscar
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/dashboard/strategy/store"
+                        className="text-black"
+                      >
+                        Cadastrar
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            ) : null}
           </ul>
         </li>
-        <li>
+
+        <li className="sidenav-close">
           <Link to="/login" className="text-black" onClick={() => signOut()}>
             <i className="material-icons left">exit_to_app</i>
             sair

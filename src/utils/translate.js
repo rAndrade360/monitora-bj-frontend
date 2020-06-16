@@ -19,6 +19,8 @@ export const translateFinalClassification = (status) => {
       return 'Confirmação laboratorial';
     case 'confirmacao_clinico_epidemiologico':
       return 'Confirmação clínico epidemiológico';
+    case 'nao_definido':
+      return 'Não definido';
     default:
       return status;
   }
@@ -130,5 +132,16 @@ export const translateBooleanValue = (data) => {
       return 'Não';
     default:
       return data;
+  }
+};
+
+export const translateStrategyType = (strategyType) => {
+  switch (strategyType) {
+    case 'basic_unity':
+      return 'Unidade Básica de Saúde';
+    case 'test_center':
+      return 'Centro de Testagem';
+    default:
+      return strategyType;
   }
 };

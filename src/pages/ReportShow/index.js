@@ -17,59 +17,60 @@ function ReportShow() {
   const [reportData, setReportData] = useState({});
   const { patientId, reportId } = useParams();
   const history = useHistory();
-  async function loadReportData(patient_id, report_id) {
-    let response;
-    try {
-      response = await api.get(
-        `/patient/dailyreport?patient=${patient_id}&reportId=${report_id}`
-      );
-    } catch (error) {
-      alert('Não foi possível buscar os dados do relatório!');
-      return history.push('/dailyreport');
-    }
-    const reportResponse = response.data.map(
-      ({
-        patient_id,
-        id,
-        name,
-        cpf,
-        phone_number,
-        genre,
-        screening_day,
-        birthday,
-        status,
-        risk,
-        created_at,
-        ...rest
-      }) => {
-        Object.keys(rest).forEach((item) => {
-          rest[item] = translateBooleanValue(rest[item]);
-        });
-        return {
-          patient: {
-            id: patient_id,
-            name,
-            cpf: formatCpf(cpf),
-            phone_number: formatPhoneNumber(phone_number),
-            genre,
-            birthday: format(birthday, 'dd/MM/yyyy'),
-            screening_day: format(screening_day, 'dd/MM/yyyy'),
-            status: translateStaus(status),
-            risk: translateRisk(risk),
-          },
-          report: {
-            id,
-            created_at,
-            ...rest,
-          },
-        };
-      }
-    );
-    setReportData(reportResponse);
-  }
+
   useEffect(() => {
+    async function loadReportData(patient_id, report_id) {
+      let response;
+      try {
+        response = await api.get(
+          `/patient/dailyreport?patient=${patient_id}&reportId=${report_id}`
+        );
+      } catch (error) {
+        alert('Não foi possível buscar os dados do relatório!');
+        return history.push('/dailyreport');
+      }
+      const reportResponse = response.data.map(
+        ({
+          patient_id,
+          id,
+          name,
+          cpf,
+          phone_number,
+          genre,
+          screening_day,
+          birthday,
+          status,
+          risk,
+          created_at,
+          ...rest
+        }) => {
+          Object.keys(rest).forEach((item) => {
+            rest[item] = translateBooleanValue(rest[item]);
+          });
+          return {
+            patient: {
+              id: patient_id,
+              name,
+              cpf: formatCpf(cpf),
+              phone_number: formatPhoneNumber(phone_number),
+              genre,
+              birthday: format(birthday, 'dd/MM/yyyy'),
+              screening_day: format(screening_day, 'dd/MM/yyyy'),
+              status: translateStaus(status),
+              risk: translateRisk(risk),
+            },
+            report: {
+              id,
+              created_at,
+              ...rest,
+            },
+          };
+        }
+      );
+      setReportData(reportResponse);
+    }
     loadReportData(patientId, reportId);
-  }, [loadReportData, patientId, reportId]);
+  }, [patientId, reportId, history]);
 
   async function onReadClick() {
     try {
@@ -93,7 +94,7 @@ function ReportShow() {
       return history.push('/dailyreport');
     }
     alert('O status do paciente foi atualizado com sucesso!');
-    await loadReportData(patientId, reportId);
+    window.location.reload();
   }
 
   if (!reportData[0]) {

@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form } from '@unform/web';
 import Materialize from 'materialize-css';
 import { useHistory, useParams } from 'react-router-dom';
+import axios from 'axios';
 import { parse, format } from 'date-fns';
 import Input from '../../components/Input';
 import api from '../../services/api';
@@ -14,24 +15,39 @@ function UserUpdate() {
     risk: '',
     status: '',
   });
-  const formRef = useRef(null);
+  const [loading, setLoading] = useState(true);
+  const [initialData, setInitialData] = useState({});
   const history = useHistory();
   const { id } = useParams();
   const { token } = useAuth();
   useEffect(() => {
-    async function loadPatientData(patientId) {
+    const elemsDatetime = document.querySelectorAll('.datepicker');
+    const elemsSelect = document.querySelectorAll('select');
+    Materialize.Datepicker.init(elemsDatetime, { i18n, format: 'dd/mm/yyyy' });
+    Materialize.FormSelect.init(elemsSelect);
+  }, []);
+  useEffect(() => {
+    const source = axios.CancelToken.source();
+    async function loadPatientData() {
       let response;
       try {
-        response = await api.get(`/patient/${patientId}/show`, {
-          headers: {
-            authorization: token,
-          },
+        response = await api.get(`/patient/${id}/show`, {
+          cancelToken: source.token,
         });
       } catch (error) {
-        return;
+        if (axios.isCancel(error)) {
+          return;
+        } else {
+          return;
+        }
       }
       const patientData = response.data;
-      formRef.current.setData({
+      setFormSelect({
+        genre: patientData.genre,
+        risk: patientData.risk,
+        status: patientData.status,
+      });
+      setInitialData({
         patient: {
           name: patientData.name,
           monther_name: patientData.monther_name,
@@ -45,22 +61,14 @@ function UserUpdate() {
           complement: patientData.complement,
         },
       });
-      setFormSelect({
-        genre: patientData.genre,
-        risk: patientData.risk,
-        status: patientData.status,
-      });
+      setLoading(false);
     }
 
-    loadPatientData(id);
-  }, [token, id]);
-
-  useEffect(() => {
-    const elemsDatetime = document.querySelectorAll('.datepicker');
-    const elemsSelect = document.querySelectorAll('select');
-    Materialize.Datepicker.init(elemsDatetime, { i18n, format: 'dd/mm/yyyy' });
-    Materialize.FormSelect.init(elemsSelect);
-  }, []);
+    loadPatientData();
+    return () => {
+      source.cancel();
+    };
+  }, [id]);
 
   function handleChangeSelect(e) {
     setFormSelect({ ...formSelect, [e.target.name]: e.target.value });
@@ -85,7 +93,6 @@ function UserUpdate() {
       alert(
         'Não foi possível alterar os dados do paciente! Tente novamente mais tarde.'
       );
-      history.push('/dashboard/patients/1');
       return;
     }
     alert('Dados alterados com sucesso!');
@@ -100,7 +107,11 @@ function UserUpdate() {
         </div>
       </div>
       <div className="row">
-        <Form onSubmit={handleSubmit} ref={formRef} className="col s12">
+        <Form
+          onSubmit={handleSubmit}
+          initialData={initialData}
+          className="col s12"
+        >
           <div className="row">
             <legend>Dados pessoais</legend>
             <div className="row">
@@ -127,7 +138,8 @@ function UserUpdate() {
                     required
                   />
                 </div>
-
+              </div>
+              <div className="row">
                 <div className="col s12 m6">
                   <label htmlFor="patient_phone">Telefone*</label>
                   <Input
@@ -139,8 +151,7 @@ function UserUpdate() {
                     required
                   />
                 </div>
-              </div>
-              <div className="row">
+
                 <div className="input-field col s12 m6">
                   <select
                     value={formSelect.genre}
@@ -153,6 +164,8 @@ function UserUpdate() {
                   </select>
                   <label>Sexo*</label>
                 </div>
+              </div>
+              <div className="row">
                 <div className="col s12 m6">
                   <label htmlFor="patient_birthday">Data de nascimento*</label>
                   <Input

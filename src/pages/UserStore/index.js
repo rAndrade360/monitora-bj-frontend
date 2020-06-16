@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Form } from '@unform/web';
 import Materialize from 'materialize-css';
 import { useHistory } from 'react-router-dom';
 import { parse } from 'date-fns';
 import Input from '../../components/Input';
+import InputMask from '../../components/InputMask';
 import api from '../../services/api';
 import i18n from '../../utils/i18n';
 import DailyReportPopUp from '../../components/DailyReportPopUp';
+import { normalizeCpf } from '../../utils/formate';
 
 // import { Container } from './styles';
 
@@ -26,6 +28,7 @@ function UserStore() {
     recent_travel: false,
   });
   const [dailyReportChecked, setDailyReportChecked] = useState({});
+  const formRef = useRef(null);
   const history = useHistory();
   useEffect(() => {
     const elemsDatetime = document.querySelectorAll('.datepicker');
@@ -65,7 +68,9 @@ function UserStore() {
       },
     };
     sendData.patient.genre = formSelect.genre;
+    sendData.patient.phone_number = normalizeCpf(data.patient.phone_number);
     sendData.patient.phone_number = `+55${sendData.patient.phone_number}`;
+    sendData.patient.cpf = normalizeCpf(data.patient.cpf);
     sendData.patient.whatsapp =
       sendData.patient.whatsapp || sendData.patient.phone_number;
     sendData.fixed_report.risk = formSelect.risk;
@@ -97,7 +102,6 @@ function UserStore() {
       alert(
         'Não foi possível cadastrar o novo paciente! Tente novamente mais tarde.'
       );
-      history.push('/dashboard/patients/1');
       return;
     }
     alert('Paciente cadastrado com sucesso!');
@@ -113,14 +117,13 @@ function UserStore() {
           </div>
         </div>
         <div className="row">
-          <Form onSubmit={handleSubmit} className="col s12">
+          <Form ref={formRef} onSubmit={handleSubmit} className="col s12">
             <div className="row">
               <legend>Dados pessoais</legend>
               <div className="row">
                 <div className="input-field col s12 m6">
                   <label htmlFor="patient_name">Nome do paciente*</label>
                   <Input
-                    placeholder="Nome"
                     id="patient_name"
                     name="patient.name"
                     type="text"
@@ -140,11 +143,11 @@ function UserStore() {
                 </div>
                 <div className="input-field col s12 m6">
                   <label htmlFor="patient_cpf">Cpf do paciente*</label>
-                  <Input
-                    placeholder="000.000.000-00"
+                  <InputMask
                     id="patient_cpf"
                     name="patient.cpf"
                     type="text"
+                    mask="999.999.999-99"
                     className="validate"
                     required
                   />
@@ -169,22 +172,22 @@ function UserStore() {
                 </div>
                 <div className="input-field col s12 m6">
                   <label htmlFor="patient_phone">Telefone*</label>
-                  <Input
-                    placeholder="(00)00000-0000"
+                  <InputMask
                     id="patient_phone"
                     name="patient.phone_number"
-                    type="number"
+                    type="text"
                     className="validate"
+                    mask="(99)99999-9999"
                     required
                   />
                 </div>
                 <div className="input-field col s12 m6">
                   <label htmlFor="whatsapp">WhatsApp</label>
-                  <Input
-                    placeholder="(00)00000-0000"
+                  <InputMask
                     id="whatsapp"
                     name="patient.whatsapp"
-                    type="number"
+                    mask="(99)99999-9999"
+                    type="text"
                     className="validate"
                   />
                 </div>
@@ -210,12 +213,12 @@ function UserStore() {
                 </div>
                 <div className="input-field col s12 m6">
                   <label htmlFor="patient_birthday">Data de nascimento*</label>
-                  <Input
-                    placeholder="01/01/2000"
+                  <InputMask
                     id="patient_birthday"
                     name="patient.birthday"
                     type="text"
-                    className="datepicker validate"
+                    mask="99/99/9999"
+                    className="validate"
                     required
                   />
                 </div>
@@ -271,7 +274,6 @@ function UserStore() {
                 <div className="input-field col s12 m6">
                   <label htmlFor="address_address">Bairro*</label>
                   <Input
-                    placeholder="Centro"
                     id="address_address"
                     name="address.address"
                     type="text"
@@ -282,7 +284,6 @@ function UserStore() {
                 <div className="input-field col s12 m6">
                   <label htmlFor="address_street">Logradouro*</label>
                   <Input
-                    placeholder="Avenida José Pedro"
                     id="address_street"
                     name="address.street"
                     type="text"
@@ -295,7 +296,6 @@ function UserStore() {
                 <div className="input-field col s12 m6">
                   <label htmlFor="address_number">Número*</label>
                   <Input
-                    placeholder="12"
                     id="address_number"
                     name="address.number"
                     type="number"
@@ -306,7 +306,6 @@ function UserStore() {
                 <div className="input-field col s12 m6">
                   <label htmlFor="address_complement">Complemento</label>
                   <Input
-                    placeholder="Insira um complemento..."
                     id="address_complement"
                     name="address.complement"
                     type="text"
@@ -318,7 +317,6 @@ function UserStore() {
                 <div className="input-field col s12 m6">
                   <label htmlFor="address_cep">CEP*</label>
                   <Input
-                    placeholder="65380000"
                     id="address_cep"
                     name="address.cep"
                     type="number"
@@ -335,11 +333,12 @@ function UserStore() {
                   <label htmlFor="fixed_report_screening_day">
                     Data da triagem*
                   </label>
-                  <Input
+                  <InputMask
                     id="fixed_report_screening_day"
                     name="fixed_report.screening_day"
                     type="text"
-                    className="datepicker validate"
+                    className="validate"
+                    mask="99/99/9999"
                     required
                   />
                 </div>
@@ -347,11 +346,12 @@ function UserStore() {
                   <label htmlFor="fixed_report_symptom_onset_date">
                     Data em que começaram os sintomas*
                   </label>
-                  <Input
+                  <InputMask
                     id="fixed_report_symptom_onset_date"
                     name="fixed_report.symptom_onset_date"
                     type="text"
-                    className="datepicker validate"
+                    className="validate"
+                    mask="99/99/9999"
                     required
                   />
                 </div>
@@ -569,7 +569,6 @@ function UserStore() {
                 <div className="input-field col s12 m6">
                   <label htmlFor="traveled_to_city">Para onde?</label>
                   <Input
-                    placeholder="Paris, França"
                     id="traveled_to_city"
                     name="fixed_report.traveled_to_city"
                     type="text"

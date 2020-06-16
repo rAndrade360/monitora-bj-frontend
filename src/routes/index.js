@@ -7,36 +7,15 @@ import UserSearch from '../pages/UserSearch';
 import UserUpdate from '../pages/UserUpdate';
 import DailyReport from '../pages/DailyReport';
 import ReportShow from '../pages/ReportShow';
+import StrategyStore from '../pages/StrategyStore';
+import StrategyList from '../pages/StrategyList';
 import Login from '../pages/Login';
 import Page404 from '../pages/Page404';
 import UserShow from '../pages/UserShow';
-
-// import { Container } from './styles';
-
-// function PrivateRoute({ signed, children, ...rest }) {
-//   return (
-//     <Route
-//       {...rest}
-//       render={(props) =>
-//         signed ? (
-//           <div>
-//             {/* <Header /> */}
-//             {children}
-//           </div>
-//         ) : (
-//           <Redirect
-//             to={{
-//               pathname: '/login',
-//               state: { from: props.location },
-//             }}
-//           />
-//         )
-//       }
-//     />
-//   );
-// }
+import { useAuth } from '../contexts/Auth';
 
 function Routes() {
+  const { user } = useAuth();
   return (
     <Switch>
       <Redirect exact from="/" to="/login" />
@@ -50,6 +29,19 @@ function Routes() {
       <Route
         path="/dashboard/patient/:id/show"
         component={UserShow}
+        isPrivate
+      />
+      <Route path="/dashboard" exact component={Home} isPrivate />
+      <Route
+        path="/dashboard/strategies"
+        exact
+        component={StrategyList}
+        isPrivate
+      />
+      <Route
+        path="/dashboard/strategy/store"
+        exact
+        component={StrategyStore}
         isPrivate
       />
       <Route
@@ -69,7 +61,6 @@ function Routes() {
         component={ReportShow}
         isPrivate
       />
-      <Route path="/dashboard" exact component={Home} isPrivate />
       <Route path="*" component={Page404} />
     </Switch>
   );
