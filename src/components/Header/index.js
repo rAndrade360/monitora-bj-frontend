@@ -75,6 +75,7 @@ function Header() {
                 alt="Logo do monitora-BJ"
               />
             </a>
+            {/* eslint-disable-next-line */}
             <a href="#" data-target="mobile-demo" className="sidenav-trigger">
               <i className="material-icons text-black">menu</i>
             </a>
