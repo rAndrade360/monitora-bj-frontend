@@ -12,7 +12,6 @@ import StrategyList from '../pages/StrategyList';
 import Login from '../pages/Login';
 import Page404 from '../pages/Page404';
 import UserShow from '../pages/UserShow';
-import { useAuth } from '../contexts/Auth';
 
 function Routes() {
   return (
