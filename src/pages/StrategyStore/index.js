@@ -58,7 +58,11 @@ function StrategyStore() {
             </div>
             <div className="row">
               <div className="input-field col s12 m6">
-                <select value={type} name="risk" onChange={setType}>
+                <select
+                  value={type}
+                  name="risk"
+                  onChange={(e) => setType(e.target.value)}
+                >
                   <option value="basic_unity">Unidade Básica de Saúde</option>
                   <option value="test_center">Centro de testagem</option>
                 </select>
