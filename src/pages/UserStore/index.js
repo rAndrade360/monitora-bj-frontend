@@ -206,8 +206,8 @@ function UserStore() {
                     name="genre"
                     onChange={handleChangeSelect}
                   >
-                    <option value="male">masculino</option>
-                    <option value="female">feminino</option>
+                    <option value="masculino">masculino</option>
+                    <option value="feminino">feminino</option>
                   </select>
                   <label>Sexo*</label>
                 </div>
