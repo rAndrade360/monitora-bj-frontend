@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import api from '../../services/api.js';
+import fetchStrategies from '../../utils/fetchStrategies';
 import { translateStrategyType } from '../../utils/translate';
 
 function StrategyList() {
@@ -8,16 +8,7 @@ function StrategyList() {
   const history = useHistory();
   useEffect(() => {
     async function loadStrategies() {
-      let response;
-      try {
-        response = await api.get('/strategies');
-      } catch (error) {
-        if (error.response.status === 401) {
-          alert('Você não tem autorização para realizar esse tipo de ação!');
-          history.push('/dashboard');
-        }
-        return;
-      }
+      const response = await fetchStrategies(history);
       setStrategies(response.data);
     }
     loadStrategies();

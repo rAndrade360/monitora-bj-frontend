@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import materialize from 'materialize-css';
 import { Form } from '@unform/web';
-import Input from '../Input';
+import InputMask from '../InputMask';
 import { translateTestResult } from '../../utils/translate';
 import i18n from '../../utils/i18n';
 
@@ -122,10 +122,11 @@ function UpdateTestDataPopUp({ testData, onStatusUpdateClick }) {
               <label htmlFor="fixed_report_symptom_onset_date">
                 Data de coleta do material para teste
               </label>
-              <Input
+              <InputMask
                 id="fixed_report_symptom_onset_date"
                 name="collection_date"
                 type="text"
+                mask="99/99/99"
                 className="datepicker validate"
               />
             </div>

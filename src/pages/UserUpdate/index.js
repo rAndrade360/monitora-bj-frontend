@@ -5,6 +5,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { parse, format, parseISO } from 'date-fns';
 import Input from '../../components/Input';
+import InputMask from '../../components/InputMask';
 import api from '../../services/api';
 import { useAuth } from '../../contexts/Auth';
 import i18n from '../../utils/i18n';
@@ -166,12 +167,12 @@ function UserUpdate() {
               <div className="row">
                 <div className="col s12 m6">
                   <label htmlFor="patient_birthday">Data de nascimento*</label>
-                  <Input
-                    placeholder="01/01/2000"
+                  <InputMask
                     id="patient_birthday"
                     name="patient.birthday"
+                    mask="99/99/9999"
                     type="text"
-                    className="datepicker validate"
+                    className="validate"
                     required
                   />
                 </div>

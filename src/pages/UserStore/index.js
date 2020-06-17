@@ -6,8 +6,8 @@ import { parse } from 'date-fns';
 import Input from '../../components/Input';
 import InputMask from '../../components/InputMask';
 import api from '../../services/api';
-import i18n from '../../utils/i18n';
 import DailyReportPopUp from '../../components/DailyReportPopUp';
+import fetchStrategies from '../../utils/fetchStrategies';
 import { normalizeCpf } from '../../utils/formate';
 
 // import { Container } from './styles';
@@ -20,6 +20,7 @@ function UserStore() {
     test_type: 'teste_rapido_anticorpo',
     test_status: 'solicitado',
   });
+  const [strategies, setStrategies] = useState({ strategies: [], selected: 0 });
   const [checkbox, setCheckbox] = useState({
     is_foreign: false,
     healthcare_professional: false,
@@ -31,11 +32,24 @@ function UserStore() {
   const formRef = useRef(null);
   const history = useHistory();
   useEffect(() => {
-    const elemsDatetime = document.querySelectorAll('.datepicker');
     const elemsSelect = document.querySelectorAll('select');
-    Materialize.Datepicker.init(elemsDatetime, { i18n, format: 'dd/mm/yyyy' });
     Materialize.FormSelect.init(elemsSelect);
   }, []);
+
+  // useEffect(() => {
+  //   async function loadStrategies() {
+  //     const response = await fetchStrategies(history);
+  //     const newData = response.data.filter(
+  //       (res) => res.permission === 'basic_unity'
+  //     );
+  //     console.log(newData);
+  //     setStrategies({
+  //       strategies: response.status === 200 ? newData : [],
+  //       selected: response.status === 200 ? newData[0].id : 0,
+  //     });
+  //   }
+  //   loadStrategies();
+  // }, [history]);
 
   function handleChangeSelect(e) {
     setFormSelect({
@@ -629,7 +643,7 @@ function UserStore() {
                         teste rápido - anticorpo
                       </option>
                       <option value="teste_rapido_antigeno">
-                        teste_rapido_antigeno
+                        teste rápido - antígeno
                       </option>
                       <option value="rt_pcr">RT - PCR</option>
                     </select>
