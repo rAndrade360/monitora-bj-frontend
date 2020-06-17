@@ -7,7 +7,7 @@ import Input from '../../components/Input';
 import InputMask from '../../components/InputMask';
 import api from '../../services/api';
 import DailyReportPopUp from '../../components/DailyReportPopUp';
-import fetchStrategies from '../../utils/fetchStrategies';
+// import fetchStrategies from '../../utils/fetchStrategies';
 import { normalizeCpf } from '../../utils/formate';
 
 // import { Container } from './styles';
@@ -20,7 +20,7 @@ function UserStore() {
     test_type: 'teste_rapido_anticorpo',
     test_status: 'solicitado',
   });
-  const [strategies, setStrategies] = useState({ strategies: [], selected: 0 });
+  // const [strategies, setStrategies] = useState({ strategies: [], selected: 0 });
   const [checkbox, setCheckbox] = useState({
     is_foreign: false,
     healthcare_professional: false,
