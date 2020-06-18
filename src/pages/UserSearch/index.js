@@ -109,7 +109,6 @@ function UserSearch() {
                       className="browser-default"
                       onChange={handleChangeStrategy}
                     >
-                      {console.log(strategies)}
                       <option value={null}>Todo o município</option>
                       {strategies.strategies.map((strategy) => (
                         <option key={strategy.id} value={strategy.id}>

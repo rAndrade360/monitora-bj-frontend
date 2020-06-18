@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { format, parseISO } from 'date-fns';
 import api from '../../services/api';
 import questions from '../../utils/questios.json';
 import {
@@ -25,7 +24,6 @@ function ReportShow({ patient }) {
         );
       } catch (error) {
         alert('Não foi possível buscar os dados do relatório!');
-        return history.push('/dailyreport');
       }
       const reportResponse = response.data.map(
         ({
@@ -35,11 +33,8 @@ function ReportShow({ patient }) {
           cpf,
           phone_number,
           genre,
-          screening_day,
-          birthday,
           status,
           risk,
-          created_at,
           ...rest
         }) => {
           Object.keys(rest).forEach((item) => {
@@ -52,14 +47,11 @@ function ReportShow({ patient }) {
               cpf: formatCpf(cpf),
               phone_number: formatPhoneNumber(phone_number),
               genre,
-              birthday: format(parseISO(birthday), 'dd/MM/yyyy'),
-              screening_day: format(parseISO(screening_day), 'dd/MM/yyyy'),
               status: translateStaus(status),
               risk: translateRisk(risk),
             },
             report: {
               id,
-              created_at,
               ...rest,
             },
           };

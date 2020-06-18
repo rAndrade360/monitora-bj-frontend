@@ -123,7 +123,6 @@ function UserStore() {
     sendData.fixed_report.recent_travel = checkbox.recent_travel;
     sendData.fixed_report.recent_contact = checkbox.recent_contact;
     sendData.daily_report = dailyReportChecked;
-    console.log(strategies.selected);
     try {
       await api.post('/patients', sendData, {
         headers: {
@@ -159,7 +158,6 @@ function UserStore() {
                 className="browser-default"
                 onChange={handleChangeStrategy}
               >
-                {console.log(strategies)}
                 {strategies.strategies.map((strategy) => (
                   <option key={strategy.id} value={strategy.id}>
                     {strategy.name}
