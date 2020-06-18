@@ -7,8 +7,9 @@ import Input from '../../components/Input';
 import InputMask from '../../components/InputMask';
 import api from '../../services/api';
 import DailyReportPopUp from '../../components/DailyReportPopUp';
-// import fetchStrategies from '../../utils/fetchStrategies';
+import fetchStrategies from '../../utils/fetchStrategies';
 import { normalizeCpf } from '../../utils/formate';
+import { useAuth } from '../../contexts/Auth';
 
 // import { Container } from './styles';
 
@@ -20,7 +21,10 @@ function UserStore() {
     test_type: 'teste_rapido_anticorpo',
     test_status: 'solicitado',
   });
-  // const [strategies, setStrategies] = useState({ strategies: [], selected: 0 });
+  const [strategies, setStrategies] = useState({
+    strategies: [],
+    selected: null,
+  });
   const [checkbox, setCheckbox] = useState({
     is_foreign: false,
     healthcare_professional: false,
@@ -29,6 +33,7 @@ function UserStore() {
     recent_travel: false,
   });
   const [dailyReportChecked, setDailyReportChecked] = useState({});
+  const { user } = useAuth();
   const formRef = useRef(null);
   const history = useHistory();
   useEffect(() => {
@@ -36,20 +41,28 @@ function UserStore() {
     Materialize.FormSelect.init(elemsSelect);
   }, []);
 
-  // useEffect(() => {
-  //   async function loadStrategies() {
-  //     const response = await fetchStrategies(history);
-  //     const newData = response.data.filter(
-  //       (res) => res.permission === 'basic_unity'
-  //     );
-  //     console.log(newData);
-  //     setStrategies({
-  //       strategies: response.status === 200 ? newData : [],
-  //       selected: response.status === 200 ? newData[0].id : 0,
-  //     });
-  //   }
-  //   loadStrategies();
-  // }, [history]);
+  useEffect(() => {
+    async function loadStrategies() {
+      if (user.permission === 'secretary') {
+        const response = await fetchStrategies(history);
+        const newData = response.data.filter(
+          (res) => res.permission === 'basic_unity'
+        );
+        setStrategies({
+          strategies: response.status === 200 ? newData : [],
+          selected: response.status === 200 ? newData[0].id : 0,
+        });
+      }
+    }
+    loadStrategies();
+  }, [history, user.permission]);
+
+  function handleChangeStrategy(e) {
+    setStrategies({
+      ...strategies,
+      selected: e.target.value,
+    });
+  }
 
   function handleChangeSelect(e) {
     setFormSelect({
@@ -110,8 +123,14 @@ function UserStore() {
     sendData.fixed_report.recent_travel = checkbox.recent_travel;
     sendData.fixed_report.recent_contact = checkbox.recent_contact;
     sendData.daily_report = dailyReportChecked;
+    console.log(strategies.selected);
     try {
-      await api.post('/patients', sendData);
+      await api.post('/patients', sendData, {
+        headers: {
+          strategy_id:
+            strategies.selected || api.defaults.headers.common.strategy_id,
+        },
+      });
     } catch (err) {
       alert(
         'Não foi possível cadastrar o novo paciente! Tente novamente mais tarde.'
@@ -130,6 +149,26 @@ function UserStore() {
             <h1 className="title center">Cadastrar novo paciente</h1>
           </div>
         </div>
+        {strategies.strategies.length > 0 ? (
+          <div className="row">
+            <div className="col s12 m6">
+              <label>Selecione a UBS*</label>
+              <select
+                value={strategies.selected}
+                name="genre"
+                className="browser-default"
+                onChange={handleChangeStrategy}
+              >
+                {console.log(strategies)}
+                {strategies.strategies.map((strategy) => (
+                  <option key={strategy.id} value={strategy.id}>
+                    {strategy.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        ) : null}
         <div className="row">
           <Form ref={formRef} onSubmit={handleSubmit} className="col s12">
             <div className="row">

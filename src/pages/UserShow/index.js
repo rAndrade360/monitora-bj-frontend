@@ -11,6 +11,7 @@ import {
   translateFinalClassification,
 } from '../../utils/translate';
 import PopUpDelete from '../../components/PopUpDelete';
+import ReportShow from '../ReportShow';
 import UpdateTestDataPopUp from '../../components/UpdateTestDataPopUp';
 import { useAuth } from '../../contexts/Auth';
 import './styles.css';
@@ -231,6 +232,18 @@ function UserShow() {
             <p>{patientData.symptom_onset_date}</p>
           </div>
           <div className="col s12 m6">
+            <label>Sintomas</label>
+            <div className="row">
+              <button
+                className="btn blue modal-trigger"
+                data-target="modalReport"
+              >
+                Ver sintomas{' '}
+              </button>
+            </div>
+            <ReportShow patient={patientData} />
+          </div>
+          <div className="col s12 m6">
             <label>Doenças anteriores</label>
             <ul>
               {patientData.conditions.map((element, index) => (
@@ -239,32 +252,33 @@ function UserShow() {
             </ul>
           </div>
         </div>
-      </div>
-      <div className="row">
-        <div className="col s12">
-          <h2 className="title">Dados do teste</h2>
-          <div className="col s12 m6">
-            <label>Estado do teste:</label>
-            <p>{patientData.test_status}</p>
-          </div>
-          <div className="col s12 m6">
-            <label>Tipo:</label>
-            <p>{translateTestType(patientData.test_type)}</p>
-          </div>
-          <div className="col s12 m6">
-            <label>Resultado:</label>
-            <p>{translateTestResult(patientData.test_result)}</p>
-          </div>
-          <div className="col s12 m6">
-            <label>Classificação final:</label>
-            <p>
-              {translateFinalClassification(patientData.final_classification) ||
-                'Não há dados'}
-            </p>
-          </div>
-          <div className="col s12 m6">
-            <label>Data de coleta:</label>
-            <p>{patientData.collection_date || 'Não coletado'}</p>
+        <div className="row">
+          <div className="col s12">
+            <h2 className="title">Dados do teste</h2>
+            <div className="col s12 m6">
+              <label>Estado do teste:</label>
+              <p>{patientData.test_status}</p>
+            </div>
+            <div className="col s12 m6">
+              <label>Tipo:</label>
+              <p>{translateTestType(patientData.test_type)}</p>
+            </div>
+            <div className="col s12 m6">
+              <label>Resultado:</label>
+              <p>{translateTestResult(patientData.test_result)}</p>
+            </div>
+            <div className="col s12 m6">
+              <label>Classificação final:</label>
+              <p>
+                {translateFinalClassification(
+                  patientData.final_classification
+                ) || 'Não há dados'}
+              </p>
+            </div>
+            <div className="col s12 m6">
+              <label>Data de coleta:</label>
+              <p>{patientData.collection_date || 'Não coletado'}</p>
+            </div>
           </div>
         </div>
       </div>

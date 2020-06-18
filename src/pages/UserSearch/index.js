@@ -2,30 +2,71 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import Pagination from 'react-js-pagination';
 import api from '../../services/api';
+import { useAuth } from '../../contexts/Auth';
 import ListItem from '../../components/ListItemPatient';
+import fetchStrategies from '../../utils/fetchStrategies';
+import { useCallback } from 'react';
 
 function UserSearch() {
   const [patients, setPatients] = useState([]);
   const [pageCount, setPageCount] = useState(1);
   const [patientName, setPatientName] = useState('');
+  const [strategies, setStrategies] = useState({
+    strategies: [],
+    selected: null,
+  });
+  const { user } = useAuth();
   const { page } = useParams();
   const history = useHistory();
 
-  async function getPatients(paginate = 1, name = '') {
-    const response = await api.get(`/patients?page=${paginate}&name=${name}`);
-    setPatients(response.data.patient);
-    setPageCount(response.data.count[0]['count(*)'] || 1);
+  useEffect(() => {
+    async function loadStrategies() {
+      if (user.permission === 'secretary') {
+        const response = await fetchStrategies(history);
+        const newData = response.data.filter(
+          (res) => res.permission === 'basic_unity'
+        );
+        setStrategies({
+          strategies: response.status === 200 ? newData : [],
+          selected: null,
+        });
+      }
+    }
+    loadStrategies();
+  }, [history, user.permission]);
+
+  const getPatients = useCallback(
+    async (paginate = 1, selected = null, name = '') => {
+      const response = await api.get(
+        `/patients?page=${paginate}&name=${name}`,
+        {
+          headers: {
+            strategy_id: selected || api.defaults.headers.common.strategy_id,
+          },
+        }
+      );
+      setPatients(response.data.patient);
+      setPageCount(response.data.count[0]['count(*)'] || 1);
+    },
+    []
+  );
+
+  function handleChangeStrategy(e) {
+    setStrategies({
+      ...strategies,
+      selected: e.target.value,
+    });
   }
 
   useEffect(() => {
     getPatients(page);
-  }, [page]);
+  }, [getPatients, page]);
   function handleChangePage(pageNumber) {
     history.push(`/dashboard/patients/${pageNumber}`);
   }
   function handleSearch(e) {
     e.preventDefault();
-    getPatients(page, patientName);
+    getPatients(page, strategies.selected, patientName);
     setPatientName('');
   }
 
@@ -42,6 +83,7 @@ function UserSearch() {
               <h1 className="title center">Buscar Pacientes</h1>
             </div>
           </div>
+
           <div className="row">
             <form className="col s12" onSubmit={handleSearch}>
               <div className="row">
@@ -57,6 +99,27 @@ function UserSearch() {
                   <label htmlFor="filter_by_name">Filtrar pelo nome</label>
                 </div>
               </div>
+              {strategies.strategies.length > 0 ? (
+                <div className="row">
+                  <div className="col s12 m6">
+                    <label>Selecione a UBS*</label>
+                    <select
+                      value={strategies.selected}
+                      name="genre"
+                      className="browser-default"
+                      onChange={handleChangeStrategy}
+                    >
+                      {console.log(strategies)}
+                      <option value={null}>Todo o município</option>
+                      {strategies.strategies.map((strategy) => (
+                        <option key={strategy.id} value={strategy.id}>
+                          {strategy.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              ) : null}
               <div className="row">
                 <div className="col s12">
                   <button className="btn blue right" type="submit">
