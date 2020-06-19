@@ -8,12 +8,18 @@ import {
   translateRisk,
 } from '../../utils/translate';
 import { formatCpf, formatPhoneNumber } from '../../utils/formate';
+import materialize from 'materialize-css';
 
 // import { Container } from './styles';
 
 function ReportShow({ patient }) {
   const [reportData, setReportData] = useState({});
   const history = useHistory();
+
+  useEffect(() => {
+    const elemModal = document.querySelectorAll('.modal');
+    materialize.Modal.init(elemModal);
+  }, []);
 
   useEffect(() => {
     async function loadReportData(patient_id, report_id) {
@@ -29,6 +35,9 @@ function ReportShow({ patient }) {
         ({
           patient_id,
           id,
+          birthday,
+          screening_day,
+          created_at,
           name,
           cpf,
           phone_number,
@@ -43,6 +52,9 @@ function ReportShow({ patient }) {
           return {
             patient: {
               id: patient_id,
+              birthday,
+              screening_day,
+              created_at,
               name,
               cpf: formatCpf(cpf),
               phone_number: formatPhoneNumber(phone_number),

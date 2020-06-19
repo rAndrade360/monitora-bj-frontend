@@ -189,7 +189,6 @@ function UserStore() {
                     name="patient.monther_name"
                     type="text"
                     className="validate"
-                    required
                   />
                 </div>
                 <div className="input-field col s12 m6">
@@ -200,7 +199,6 @@ function UserStore() {
                     type="text"
                     mask="999.999.999-99"
                     className="validate"
-                    required
                   />
                 </div>
                 <div className="input-field col s12 m6">
@@ -214,10 +212,11 @@ function UserStore() {
                 </div>
                 <div className="input-field col s12 m6">
                   <label htmlFor="patient_cns">Cns</label>
-                  <Input
+                  <InputMask
                     id="patient_cns"
                     name="patient.cns"
                     type="text"
+                    mask="999 9999 9999 9999"
                     className="validate"
                   />
                 </div>
@@ -229,7 +228,6 @@ function UserStore() {
                     type="text"
                     className="validate"
                     mask="(99)99999-9999"
-                    required
                   />
                 </div>
                 <div className="input-field col s12 m6">
@@ -329,7 +327,6 @@ function UserStore() {
                     name="address.address"
                     type="text"
                     className="validate"
-                    required
                   />
                 </div>
                 <div className="input-field col s12 m6">
@@ -339,7 +336,6 @@ function UserStore() {
                     name="address.street"
                     type="text"
                     className="validate"
-                    required
                   />
                 </div>
               </div>
@@ -349,7 +345,7 @@ function UserStore() {
                   <Input
                     id="address_number"
                     name="address.number"
-                    type="number"
+                    type="text"
                     className="validate"
                     required
                   />

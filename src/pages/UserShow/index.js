@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { format, parse, parseISO } from 'date-fns';
+import { parse } from 'date-fns';
+import formatTheDateYall from '../../utils/formatTheDateYall';
 import api from '../../services/api';
 import { formatCpf, formatPhoneNumber } from '../../utils/formate';
 import {
@@ -36,22 +37,17 @@ function UserShow() {
       response.data.phone_number = formatPhoneNumber(
         response.data.phone_number
       );
-      response.data.birthday = format(
-        parseISO(response.data.birthday),
-        'dd/MM/yyyy'
+      response.data.birthday = formatTheDateYall(response.data.birthday);
+      response.data.screening_day = formatTheDateYall(
+        response.data.screening_day
       );
-      response.data.screening_day = format(
-        parseISO(response.data.screening_day),
-        'dd/MM/yyyy'
-      );
-      response.data.symptom_onset_date = format(
-        parseISO(response.data.symptom_onset_date),
-        'dd/MM/yyyy'
+      response.data.symptom_onset_date = formatTheDateYall(
+        response.data.symptom_onset_date
       );
       response.data.status = translateStaus(response.data.status);
       response.data.risk = translateRisk(response.data.risk);
       response.data.collection_date = response.data.collection_date
-        ? format(parseISO(response.data.collection_date), 'dd/MM/yyyy')
+        ? formatTheDateYall(response.data.collection_date)
         : '';
       setPatientData(response.data);
       setLoading(false);
