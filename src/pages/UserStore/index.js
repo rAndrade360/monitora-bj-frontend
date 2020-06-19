@@ -96,7 +96,9 @@ function UserStore() {
     };
     sendData.patient.genre = formSelect.genre;
     sendData.patient.phone_number = normalizeCpf(data.patient.phone_number);
-    sendData.patient.phone_number = `+55${sendData.patient.phone_number}`;
+    sendData.patient.phone_number = sendData.patient.phone_number
+      ? `+55${sendData.patient.phone_number}`
+      : sendData.patient.phone_number;
     sendData.patient.cpf = normalizeCpf(data.patient.cpf);
     sendData.patient.whatsapp =
       sendData.patient.whatsapp || sendData.patient.phone_number;
