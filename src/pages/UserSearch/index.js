@@ -44,7 +44,7 @@ function UserSearch() {
   }, [history, user.permission]);
 
   const getPatients = useCallback(
-    async (paginate = 1, selected = null, name = '', status, date) => {
+    async (paginate = 1, selected = undefined, name = '', status, date) => {
       const response = await api.get(`/patients`, {
         headers: {
           strategy_id: selected || api.defaults.headers.common.strategy_id,
