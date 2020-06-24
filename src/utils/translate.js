@@ -28,9 +28,9 @@ export const translateFinalClassification = (status) => {
 
 export const translateTestResult = (result) => {
   switch (result) {
-    case 1:
+    case true:
       return 'positivo';
-    case 0:
+    case false:
       return 'negativo';
     default:
       return 'Não realizado';

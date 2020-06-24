@@ -95,11 +95,15 @@ function UserStore() {
       },
     };
     sendData.patient.genre = formSelect.genre;
+    sendData.patient.monther_name = sendData.patient.monther_name || null;
     sendData.patient.phone_number = normalizeCpf(data.patient.phone_number);
     sendData.patient.phone_number = sendData.patient.phone_number
       ? `+55${sendData.patient.phone_number}`
-      : sendData.patient.phone_number;
-    sendData.patient.cpf = normalizeCpf(data.patient.cpf);
+      : null;
+    sendData.patient.cpf =
+      sendData.patient.cpf && sendData.patient.cpf.length > 0
+        ? normalizeCpf(data.patient.cpf)
+        : null;
     sendData.patient.whatsapp =
       sendData.patient.whatsapp || sendData.patient.phone_number;
     sendData.fixed_report.risk = formSelect.risk;
@@ -133,9 +137,8 @@ function UserStore() {
         },
       });
     } catch (err) {
-      alert(
-        'Não foi possível cadastrar o novo paciente! Tente novamente mais tarde.'
-      );
+      if (err.response.status === 400)
+        return err.response.data.errors.map((erro) => alert(erro.msg));
       return;
     }
     alert('Paciente cadastrado com sucesso!');
@@ -181,17 +184,29 @@ function UserStore() {
                     name="patient.name"
                     type="text"
                     className="validate"
+                    minLength={5}
                     required
                   />
+                  <span
+                    class="helper-text"
+                    data-error="O nome deve ter pelo menos 5 caracteres"
+                    data-success="Tudo certo!"
+                  ></span>
                 </div>
                 <div className="input-field col s12 m6">
                   <label htmlFor="patient_monther_name">Nome da mãe*</label>
                   <Input
                     id="patient_monther_name"
                     name="patient.monther_name"
+                    minLength={5}
                     type="text"
                     className="validate"
                   />
+                  <span
+                    class="helper-text"
+                    data-error="O nome da mãe deve ter pelo menos 5 caracteres"
+                    data-success="Tudo certo!"
+                  ></span>
                 </div>
                 <div className="input-field col s12 m6">
                   <label htmlFor="patient_cpf">Cpf do paciente*</label>
@@ -202,6 +217,11 @@ function UserStore() {
                     mask="999.999.999-99"
                     className="validate"
                   />
+                  <span
+                    class="helper-text"
+                    data-error="O cpf deve ter pelo menos 11 números"
+                    data-success="Tudo certo!"
+                  ></span>
                 </div>
                 <div className="input-field col s12 m6">
                   <label htmlFor="patient_cbo">Cbo</label>
@@ -272,6 +292,11 @@ function UserStore() {
                     className="validate"
                     required
                   />
+                  <span
+                    class="helper-text"
+                    data-error="Informe a data de nascimento"
+                    data-success="Tudo certo!"
+                  ></span>
                 </div>
                 <div className="input-field col s12 m6">
                   <label htmlFor="patient_origin_country">País de origem</label>
@@ -349,7 +374,6 @@ function UserStore() {
                     name="address.number"
                     type="text"
                     className="validate"
-                    required
                   />
                 </div>
                 <div className="input-field col s12 m6">
@@ -622,6 +646,77 @@ function UserStore() {
                     name="fixed_report.traveled_to_city"
                     type="text"
                     className="validate"
+                  />
+                </div>
+                <div className="input-field col s12 m6">
+                  <label htmlFor="temperature">Temperatura (em °C)</label>
+                  <Input
+                    id="temperature"
+                    name="fixed_report.temperature"
+                    type="number"
+                    className="validate"
+                  />
+                </div>
+                <div className="input-field col s12 m6">
+                  <label htmlFor="blood_glucose">Glicemia (em mg/dL)</label>
+                  <Input
+                    id="blood_glucose"
+                    name="fixed_report.blood_glucose"
+                    type="number"
+                    className="validate"
+                  />
+                </div>
+                <div className="input-field col s12 m6">
+                  <label htmlFor="blood_pressure">
+                    Pressão arterial (em mmHg)
+                  </label>
+                  <Input
+                    id="blood_pressure"
+                    name="fixed_report.blood_pressure"
+                    type="text"
+                    className="validate"
+                  />
+                </div>
+                <div className="input-field col s12 m6">
+                  <label htmlFor="heart_rate">
+                    Frequência cardíaca (em bpm)
+                  </label>
+                  <Input
+                    id="heart_rate"
+                    name="fixed_report.heart_rate"
+                    type="number"
+                    className="validate"
+                  />
+                </div>
+                <div className="input-field col s12 m6">
+                  <label htmlFor="oxygen_saturation">
+                    Saturação de oxigênio (em %)
+                  </label>
+                  <Input
+                    id="oxygen_saturation"
+                    name="fixed_report.oxygen_saturation"
+                    type="number"
+                    className="validate"
+                  />
+                </div>
+                <div className="input-field col s12 m6">
+                  <label htmlFor="household_contacts">
+                    Contatos intradomiciliares
+                  </label>
+                  <Input
+                    id="household_contacts"
+                    name="fixed_report.household_contacts"
+                    type="number"
+                    className="validate"
+                  />
+                </div>
+                <div className="input-field col s12 m6">
+                  <label htmlFor="additional_notes">Observações</label>
+                  <Input
+                    id="additional_notes"
+                    name="fixed_report.additional_notes"
+                    type="text"
+                    className="materialize-textarea"
                   />
                 </div>
               </div>

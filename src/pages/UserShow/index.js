@@ -80,7 +80,8 @@ function UserShow() {
       'dd/MM/yyyy',
       new Date()
     );
-    testData.test_result = testData.test_result === 'positivo' ? true : false;
+    testData.test_result =
+      testData.test_result === 'Não testado' ? null : testData.test_result;
     const status = testData.status;
     testData.status = undefined;
     try {
@@ -98,7 +99,6 @@ function UserShow() {
       return;
     }
     alert('Dados alterados com sucesso!');
-    history.push(`/dashboard/patient/show/${patientData.id}`);
     window.location.reload();
   }
 
@@ -170,12 +170,36 @@ function UserShow() {
             <p>{patientData.name}</p>
           </div>
           <div className="col s12 m6">
+            <label>Nome da mãe:</label>
+            <p>{patientData.monther_name}</p>
+          </div>
+          <div className="col s12 m6">
             <label>Cpf:</label>
             <p>{patientData.cpf}</p>
           </div>
           <div className="col s12 m6">
+            <label>Cns:</label>
+            <p>{patientData.cns || 'Não informado'}</p>
+          </div>
+          <div className="col s12 m6">
             <label>Telefone:</label>
-            <p>{patientData.phone_number}</p>
+            <p>{patientData.phone_number || 'Não informado'}</p>
+          </div>
+          <div className="col s12 m6">
+            <label>Whatsapp:</label>
+            <p>{patientData.whatsapp || 'Não informado'}</p>
+          </div>
+          <div className="col s12 m6">
+            <label>Estrangeiro:</label>
+            <p>{patientData.is_foreign ? 'Sim' : 'Não'}</p>
+          </div>
+          <div className="col s12 m6">
+            <label>Profissional de saúde:</label>
+            <p>{patientData.healthcare_professional ? 'Sim' : 'Não'}</p>
+          </div>
+          <div className="col s12 m6">
+            <label>Passaporte:</label>
+            <p>{patientData.passport || 'Não informado'}</p>
           </div>
           <div className="col s12 m6">
             <label>Sexo:</label>
@@ -184,6 +208,14 @@ function UserShow() {
           <div className="col s12 m6">
             <label>Data de nascimento:</label>
             <p>{patientData.birthday}</p>
+          </div>
+          <div className="col s12 m6">
+            <label>País de origem:</label>
+            <p>{patientData.origin_country}</p>
+          </div>
+          <div className="col s12 m6">
+            <label>Data de registro:</label>
+            <p>{formatTheDateYall(patientData.creation_date)}</p>
           </div>
         </div>
       </div>
@@ -226,6 +258,54 @@ function UserShow() {
           <div className="col s12 m6">
             <label>Data de início dos sintomas:</label>
             <p>{patientData.symptom_onset_date}</p>
+          </div>
+          <div className="col s12 m6">
+            <label>Glicemia:</label>
+            <p>
+              {patientData.blood_glucose
+                ? `${patientData.blood_glucose} mg/dL`
+                : 'Não informado'}
+            </p>
+          </div>
+          <div className="col s12 m6">
+            <label>Pressão arterial:</label>
+            <p>
+              {patientData.blood_pressure
+                ? `${patientData.blood_pressure} mmHg`
+                : 'Não informado'}
+            </p>
+          </div>
+          <div className="col s12 m6">
+            <label>Temperatura:</label>
+            <p>
+              {patientData.temperature
+                ? `${patientData.temperature} °C`
+                : 'Não informado'}
+            </p>
+          </div>
+          <div className="col s12 m6">
+            <label>Frequência cardíaca:</label>
+            <p>
+              {patientData.heart_rate
+                ? `${patientData.heart_rate} bpm`
+                : 'Não informado'}
+            </p>
+          </div>
+          <div className="col s12 m6">
+            <label>Saturação de oxigênio:</label>
+            <p>
+              {patientData.oxygen_saturation
+                ? `${patientData.oxygen_saturation}%`
+                : 'Não informado'}
+            </p>
+          </div>
+          <div className="col s12 m6">
+            <label>Contatos intradomiciliares:</label>
+            <p>{patientData.household_contacts || 0}</p>
+          </div>
+          <div className="col s12 m6">
+            <label>Observações:</label>
+            <p>{patientData.additional_notes || 'Não tem'}</p>
           </div>
           <div className="col s12 m6">
             <label>Sintomas</label>

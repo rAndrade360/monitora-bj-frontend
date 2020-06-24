@@ -18,6 +18,16 @@ export default function AuthProvider({ children }) {
         api.defaults.headers.common['authorization'] = storedToken;
         api.defaults.headers.common.strategy_id =
           myUser.permission === 'secretary' ? null : myUser.id;
+        api.interceptors.response.use(
+          (response) => response,
+          (error) => {
+            if (error.response.status === 401) {
+              alert('Sua sessão expirou, faça login novamente!');
+              return signOut();
+            }
+            return Promise.reject(error);
+          }
+        );
       }
       setLoading(false);
     }

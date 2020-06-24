@@ -17,6 +17,7 @@ function UserUpdate() {
     status: '',
   });
   const [initialData, setInitialData] = useState({});
+  const [loading, setLoading] = useState(true);
   const history = useHistory();
   const { id } = useParams();
   const { token } = useAuth();
@@ -25,6 +26,7 @@ function UserUpdate() {
     const elemsSelect = document.querySelectorAll('select');
     Materialize.Datepicker.init(elemsDatetime, { i18n, format: 'dd/mm/yyyy' });
     Materialize.FormSelect.init(elemsSelect);
+    Materialize.updateTextFields();
   }, []);
   useEffect(() => {
     const source = axios.CancelToken.source();
@@ -51,7 +53,12 @@ function UserUpdate() {
         patient: {
           name: patientData.name,
           monther_name: patientData.monther_name,
+          cpf: patientData.cpf,
+          cns: patientData.cns,
+          cbo: patientData.cbo,
           phone_number: patientData.phone_number,
+          passport: patientData.passport,
+          whatsapp: patientData.whatsapp,
           birthday: format(parseISO(patientData.birthday), 'dd/MM/yyyy'),
         },
         address: {
@@ -59,8 +66,19 @@ function UserUpdate() {
           street: patientData.street,
           number: patientData.number,
           complement: patientData.complement,
+          cep: patientData.cep,
+        },
+        fixed_report: {
+          temperature: patientData.temperature,
+          blood_glucose: patientData.blood_glucose,
+          blood_pressure: patientData.blood_pressure,
+          heart_rate: patientData.heart_rate,
+          oxygen_saturation: patientData.oxygen_saturation,
+          household_contacts: patientData.household_contacts,
+          additional_notes: patientData.additional_notes,
         },
       });
+      setLoading(false);
     }
 
     loadPatientData();
@@ -75,8 +93,10 @@ function UserUpdate() {
 
   async function handleSubmit(data) {
     data.patient.genre = formSelect.genre;
-    data.patient.risk = formSelect.risk;
-    data.patient.status = formSelect.status;
+    data.fixed_report.risk = formSelect.risk;
+    data.patient.phone_number = formSelect.phone_number || null;
+    data.patient.whatsapp = formSelect.whatsapp || null;
+    data.fixed_report.status = formSelect.status;
     data.patient.birthday = parse(
       data.patient.birthday,
       'dd/MM/yyyy',
@@ -95,7 +115,11 @@ function UserUpdate() {
       return;
     }
     alert('Dados alterados com sucesso!');
-    history.push(`/dashboard/patient/show/${id}`);
+    history.goBack();
+  }
+
+  if (loading) {
+    return <div className="row">Carregando...</div>;
   }
 
   return (
@@ -128,43 +152,99 @@ function UserUpdate() {
                 </div>
                 <div className="col s12 m6">
                   <label htmlFor="patient_monther_name">Nome da mãe*</label>
-                  <Input
+                  <InputMask
                     placeholder="Nome"
                     id="patient_monther_name"
                     name="patient.monther_name"
                     type="text"
                     className="validate"
-                    required
                   />
                 </div>
-              </div>
-              <div className="row">
+                <div className=" col s12 m6">
+                  <label htmlFor="patient_cpf">Cpf do paciente*</label>
+                  <Input
+                    id="patient_cpf"
+                    name="patient.cpf"
+                    type="text"
+                    className="validate"
+                    disabled={
+                      initialData.patient.cpf &&
+                      initialData.patient.cpf.length > 0
+                        ? true
+                        : false
+                    }
+                  />
+                  <span
+                    class="helper-text"
+                    data-error="O cpf deve ter pelo menos 11 números"
+                    data-success="Tudo certo!"
+                  ></span>
+                </div>
+                <div className="col s12 m6">
+                  <label htmlFor="patient_cbo">Cbo</label>
+                  <Input
+                    id="patient_cbo"
+                    name="patient.cbo"
+                    type="text"
+                    className="validate"
+                  />
+                </div>
+                <div className="col s12 m6">
+                  <label htmlFor="patient_cns">Cns</label>
+                  <Input
+                    id="patient_cns"
+                    name="patient.cns"
+                    type="text"
+                    className="validate"
+                    disabled={
+                      initialData.patient.cns &&
+                      initialData.patient.cns.length > 0
+                        ? true
+                        : false
+                    }
+                  />
+                </div>
                 <div className="col s12 m6">
                   <label htmlFor="patient_phone">Telefone*</label>
                   <Input
-                    placeholder="(00)00000-0000"
                     id="patient_phone"
                     name="patient.phone_number"
                     type="text"
                     className="validate"
-                    required
+                  />
+                </div>
+                <div className="col s12 m6">
+                  <label htmlFor="whatsapp">Whatsapp*</label>
+                  <Input
+                    id="whatsapp"
+                    name="patient.whatsapp"
+                    type="text"
+                    className="validate"
+                  />
+                </div>
+                <div className="col s12 m6">
+                  <label htmlFor="passport">Passaporte</label>
+                  <Input
+                    id="passport"
+                    name="patient.passport"
+                    type="number"
+                    className="validate"
                   />
                 </div>
 
-                <div className="input-field col s12 m6">
+                <div className="col s12 m6">
+                  <label>Sexo*</label>
                   <select
                     value={formSelect.genre}
                     name="genre"
+                    className="browser-default"
                     defaultChecked={formSelect.genre}
                     onChange={handleChangeSelect}
                   >
                     <option value="feminino">feminino</option>
                     <option value="masculino">masculino</option>
                   </select>
-                  <label>Sexo*</label>
                 </div>
-              </div>
-              <div className="row">
                 <div className="col s12 m6">
                   <label htmlFor="patient_birthday">Data de nascimento*</label>
                   <InputMask
@@ -182,59 +262,69 @@ function UserUpdate() {
           <div className="row">
             <legend>Dados de endereço</legend>
             <div className="row">
-              <div className="col s12 m6">
-                <label htmlFor="address_address">Bairro*</label>
-                <Input
-                  placeholder="Centro"
-                  id="address_address"
-                  name="address.address"
-                  type="text"
-                  className="validate"
-                  required
-                />
+              <div className="row">
+                <div className="col s12 m6">
+                  <label htmlFor="address_address">Bairro*</label>
+                  <Input
+                    placeholder="Centro"
+                    id="address_address"
+                    name="address.address"
+                    type="text"
+                    className="validate"
+                  />
+                </div>
+                <div className="col s12 m6">
+                  <label htmlFor="address_street">Logradouro*</label>
+                  <Input
+                    placeholder="Avenida José Pedro"
+                    id="address_street"
+                    name="address.street"
+                    type="text"
+                    className="validate"
+                  />
+                </div>
               </div>
-              <div className="col s12 m6">
-                <label htmlFor="address_street">Logradouro*</label>
-                <Input
-                  placeholder="Avenida José Pedro"
-                  id="address_street"
-                  name="address.street"
-                  type="text"
-                  className="validate"
-                  required
-                />
-              </div>
-            </div>
-            <div className="row">
-              <div className="col s12 m6">
-                <label htmlFor="address_number">Número*</label>
-                <Input
-                  placeholder="12"
-                  id="address_number"
-                  name="address.number"
-                  type="number"
-                  className="validate"
-                  required
-                />
-              </div>
-              <div className="col s12 m6">
-                <label htmlFor="address_complement">Complemento</label>
-                <Input
-                  placeholder="Insira um complemento..."
-                  id="address_complement"
-                  name="address.complement"
-                  type="text"
-                  className="validate"
-                />
+              <div className="row">
+                <div className="col s12 m6">
+                  <label htmlFor="address_number">Número*</label>
+                  <Input
+                    placeholder="12"
+                    id="address_number"
+                    name="address.number"
+                    type="number"
+                    className="validate"
+                  />
+                </div>
+                <div className="col s12 m6">
+                  <label htmlFor="address_complement">Complemento</label>
+                  <Input
+                    placeholder="Insira um complemento..."
+                    id="address_complement"
+                    name="address.complement"
+                    type="text"
+                    className="validate"
+                  />
+                </div>
+                <div className="col s12 m6">
+                  <label htmlFor="address_cep">CEP*</label>
+                  <Input
+                    id="address_cep"
+                    name="address.cep"
+                    type="number"
+                    className="validate"
+                  />
+                </div>
               </div>
             </div>
           </div>
           <div className="row">
             <legend>Dados de saúde</legend>
             <div className="row">
-              <div className="input-field col s12 m6">
+              <div className="col s12 m6">
+                <label>Risco do Paciente*</label>
                 <select
                   value={formSelect.risk}
+                  className="browser-default"
                   name="risk"
                   onChange={handleChangeSelect}
                 >
@@ -243,11 +333,12 @@ function UserUpdate() {
                   <option value="alto">alto</option>
                   <option value="critico">crítico</option>
                 </select>
-                <label>Risco do Paciente*</label>
               </div>
-              <div className="input-field col s12 m6">
+              <div className="col s12 m6">
+                <label>Status do Paciente*</label>
                 <select
                   value={formSelect.status}
+                  className="browser-default"
                   name="status"
                   onChange={handleChangeSelect}
                 >
@@ -268,7 +359,83 @@ function UserUpdate() {
                   <option value="curado">recuperado</option>
                   <option value="obito">óbito</option>
                 </select>
-                <label>Status do Paciente*</label>
+              </div>
+              <div className=" col s12 m6">
+                <label className="active" htmlFor="temperature">
+                  Temperatura
+                </label>
+                <Input
+                  id="temperature"
+                  name="fixed_report.temperature"
+                  type="text"
+                  className="validate"
+                />
+              </div>
+              <div className=" col s12 m6">
+                <label className="active" htmlFor="blood_glucose">
+                  Glicemia
+                </label>
+                <Input
+                  id="blood_glucose"
+                  name="fixed_report.blood_glucose"
+                  type="text"
+                  className="validate"
+                />
+              </div>
+              <div className="col s12 m6">
+                <label className="active" htmlFor="blood_pressure">
+                  Pressão arterial
+                </label>
+                <Input
+                  id="blood_pressure"
+                  name="fixed_report.blood_pressure"
+                  type="text"
+                  className="validate"
+                />
+              </div>
+              <div className="col s12 m6">
+                <label className="active" htmlFor="heart_rate">
+                  Frequência cardíaca
+                </label>
+                <Input
+                  id="heart_rate"
+                  name="fixed_report.heart_rate"
+                  type="text"
+                  className="validate"
+                />
+              </div>
+              <div className="col s12 m6">
+                <label className="active" htmlFor="oxygen_saturation">
+                  Saturação de oxigênio
+                </label>
+                <Input
+                  id="oxygen_saturation"
+                  name="fixed_report.oxygen_saturation"
+                  type="text"
+                  className="validate"
+                />
+              </div>
+              <div className="col s12 m6">
+                <label className="active" htmlFor="household_contacts">
+                  Contatos intradomiciliares
+                </label>
+                <Input
+                  id="household_contacts"
+                  name="fixed_report.household_contacts"
+                  type="number"
+                  className="validate"
+                />
+              </div>
+              <div className="col s12 m6">
+                <label className="active" htmlFor="additional_notes">
+                  Observações
+                </label>
+                <Input
+                  id="additional_notes"
+                  name="fixed_report.additional_notes"
+                  type="text"
+                  className="materialize-textarea validate"
+                />
               </div>
             </div>
           </div>

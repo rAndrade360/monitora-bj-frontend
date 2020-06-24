@@ -14,6 +14,7 @@ import materialize from 'materialize-css';
 
 function ReportShow({ patient }) {
   const [reportData, setReportData] = useState({});
+  const [loading, setLoading] = useState(true);
   const history = useHistory();
 
   useEffect(() => {
@@ -70,11 +71,12 @@ function ReportShow({ patient }) {
         }
       );
       setReportData(reportResponse);
+      setLoading(false);
     }
     loadReportData(patient.id, patient.symptoms_id);
   }, [patient, history]);
 
-  if (!reportData[0]) {
+  if (loading) {
     return (
       <div className="modal" id="modalReport">
         <div className="row">
@@ -100,7 +102,9 @@ function ReportShow({ patient }) {
               <div className="row">
                 <p className="">{question.label}</p>
                 <p className="">
-                  <strong>{reportData[0].report[question.value]}</strong>
+                  <strong>
+                    {reportData[0].report[question.value] ? 'Sim' : 'Não'}
+                  </strong>
                 </p>
               </div>
             </div>

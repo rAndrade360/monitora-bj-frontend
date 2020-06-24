@@ -1,19 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import Pagination from 'react-js-pagination';
 import api from '../../services/api';
 import { useAuth } from '../../contexts/Auth';
 import ListItem from '../../components/ListItemPatient';
 import fetchStrategies from '../../utils/fetchStrategies';
-import { useCallback } from 'react';
+import InputMask from 'react-input-mask';
+import { parse } from 'date-fns';
+
+import './styles.css';
 
 function UserSearch() {
   const [patients, setPatients] = useState([]);
-  const [pageCount, setPageCount] = useState(1);
+  const [pageCount, setPageCount] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [patientName, setPatientName] = useState('');
   const [strategies, setStrategies] = useState({
     strategies: [],
     selected: null,
+  });
+  const [filter, setFilter] = useState({
+    status: '',
+    date: '',
   });
   const { user } = useAuth();
   const { page } = useParams();
@@ -36,17 +44,24 @@ function UserSearch() {
   }, [history, user.permission]);
 
   const getPatients = useCallback(
-    async (paginate = 1, selected = null, name = '') => {
-      const response = await api.get(
-        `/patients?page=${paginate}&name=${name}`,
-        {
-          headers: {
-            strategy_id: selected || api.defaults.headers.common.strategy_id,
-          },
-        }
-      );
-      setPatients(response.data.patient);
-      setPageCount(response.data.count[0]['count(*)'] || 1);
+    async (paginate = 1, selected = null, name = '', status, date) => {
+      const response = await api.get(`/patients`, {
+        headers: {
+          strategy_id: selected || api.defaults.headers.common.strategy_id,
+        },
+        params: {
+          page: paginate,
+          name,
+          status,
+          date:
+            date && date.length === 10
+              ? parse(date, 'dd/MM/yyyy', new Date())
+              : undefined,
+        },
+      });
+      setPatients(response.data);
+      setPageCount(response.headers['x-total-count']);
+      setLoading(false);
     },
     []
   );
@@ -58,6 +73,10 @@ function UserSearch() {
     });
   }
 
+  function onChangeFilter(e) {
+    setFilter({ ...filter, [e.target.name]: e.target.value });
+  }
+
   useEffect(() => {
     getPatients(page);
   }, [getPatients, page]);
@@ -66,12 +85,23 @@ function UserSearch() {
   }
   function handleSearch(e) {
     e.preventDefault();
-    getPatients(page, strategies.selected, patientName);
+    setLoading(true);
+    getPatients(
+      page,
+      strategies.selected,
+      patientName,
+      filter.status,
+      filter.date
+    );
     setPatientName('');
   }
 
   function handleShowPatient(patientId) {
     history.push(`/dashboard/patient/${patientId}/show`);
+  }
+
+  if (loading) {
+    return <div></div>;
   }
 
   return (
@@ -99,9 +129,10 @@ function UserSearch() {
                   <label htmlFor="filter_by_name">Filtrar pelo nome</label>
                 </div>
               </div>
-              {strategies.strategies.length > 0 ? (
-                <div className="row">
-                  <div className="col s12 m6">
+              <div className="row">
+                <h2 className="filter-title">Filtros</h2>
+                {strategies.strategies.length > 0 ? (
+                  <div className="col s12 m4">
                     <label>Selecione a UBS*</label>
                     <select
                       value={strategies.selected}
@@ -117,8 +148,47 @@ function UserSearch() {
                       ))}
                     </select>
                   </div>
+                ) : null}
+                <div className="col s12 m4">
+                  <label>Selecione o status*</label>
+                  <select
+                    value={filter.status}
+                    name="status"
+                    className="browser-default"
+                    onChange={onChangeFilter}
+                  >
+                    <option value="">Todos os status</option>
+                    <option value="suspeito">suspeito</option>
+                    <option value="internado">internado</option>
+                    <option value="descartado_por_isolamento">
+                      descartado por tempo de isolamento
+                    </option>
+                    <option value="descartado_por_teste">
+                      descartado por teste
+                    </option>
+                    <option value="em_tratamento_domiciliar">
+                      em tratamento domiciliar
+                    </option>
+                    <option value="internado_em_uti">internado em UTI</option>
+                    <option value="ignorado">ignorado</option>
+                    <option value="cancelado">cancelado</option>
+                    <option value="curado">recuperado</option>
+                    <option value="obito">óbito</option>
+                  </select>
                 </div>
-              ) : null}
+                <div className="col s12 m4">
+                  <label htmlFor="date">Data de cadastro*</label>
+                  <InputMask
+                    id="date"
+                    name="date"
+                    type="text"
+                    mask="99/99/9999"
+                    className="validate"
+                    value={filter.date}
+                    onChange={onChangeFilter}
+                  />
+                </div>
+              </div>
               <div className="row">
                 <div className="col s12">
                   <button className="btn blue right" type="submit">
@@ -163,7 +233,7 @@ function UserSearch() {
             <Pagination
               activePage={parseInt(page)}
               itemsCountPerPage={20}
-              totalItemsCount={pageCount}
+              totalItemsCount={parseInt(pageCount)}
               pageRangeDisplayed={5}
               onChange={handleChangePage}
               innerClass="pagination center"

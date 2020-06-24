@@ -19,7 +19,7 @@ function ListItemPatient({ patient, handleShowPatient }) {
       : setDays({ days: `Teste já ${patient.test_status}`, color: '#FFF' });
   }, [patient]);
   const [status, color] = translateStausAndReturnColor(patient.status);
-  const cpf = formatCpf(patient.cpf);
+  const cpf = formatCpf(patient.cpf) || 'Não informado';
   return (
     <tr>
       <td>{patient.name}</td>

@@ -2,27 +2,21 @@ import React, { useState, useEffect, useRef } from 'react';
 import materialize from 'materialize-css';
 import { Form } from '@unform/web';
 import InputMask from '../InputMask';
-import { translateTestResult } from '../../utils/translate';
-import i18n from '../../utils/i18n';
-
-// import { Container } from './styles';
 
 function UpdateTestDataPopUp({ testData, onStatusUpdateClick }) {
   const [statusData, setStatusData] = useState({
     test_status: testData.test_status,
     test_type: testData.test_type,
-    test_result: translateTestResult(testData.test_result),
+    test_result: testData.test_result,
     final_classification: testData.final_classification || 'nao_definido',
     status: testData.status,
   });
   const formRef = useRef(null);
   useEffect(() => {
     const elemSelect = document.querySelectorAll('select');
-    const elemsDatetime = document.querySelectorAll('.datepicker');
     const elemModal = document.querySelectorAll('.modal');
     materialize.FormSelect.init(elemSelect);
     materialize.Modal.init(elemModal);
-    materialize.Datepicker.init(elemsDatetime, { i18n, format: 'dd/mm/yyyy' });
   }, []);
 
   function handleSubmit(data) {
@@ -76,8 +70,12 @@ function UpdateTestDataPopUp({ testData, onStatusUpdateClick }) {
                 defaultChecked={statusData.test_type}
                 onChange={onChangeSelect}
               >
-                <option value="suspect">teste rápido - anticorpo</option>
-                <option value="monitored">teste rápido - antígeno</option>
+                <option value="teste_rapido_anticorpo">
+                  teste rápido - anticorpo
+                </option>
+                <option value="teste_rapido_antigeno">
+                  teste rápido - antígeno
+                </option>
                 <option value="rt_pcr">RT - PCR</option>
               </select>
               <label>Tipo do teste</label>
@@ -91,8 +89,9 @@ function UpdateTestDataPopUp({ testData, onStatusUpdateClick }) {
                 defaultChecked={statusData.test_result}
                 onChange={onChangeSelect}
               >
-                <option value="negativo">negativo</option>
-                <option value="positivo">positivo</option>
+                <option value={null}>Não testado</option>
+                <option value={false}>negativo</option>
+                <option value={true}>positivo</option>
               </select>
               <label>Resultado do teste</label>
             </div>
@@ -126,8 +125,8 @@ function UpdateTestDataPopUp({ testData, onStatusUpdateClick }) {
                 id="fixed_report_symptom_onset_date"
                 name="collection_date"
                 type="text"
-                mask="99/99/99"
-                className="datepicker validate"
+                mask="99/99/9999"
+                className="validate"
               />
             </div>
           </div>
