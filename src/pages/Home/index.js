@@ -6,8 +6,9 @@ import CardInfo from '../../components/CardInfo';
 import api from '../../services/api';
 
 function Home() {
-  const [cardData, setCardData] = useState([]);
+  const [cardData, setCardData] = useState({ info: [], testInfo: [] });
   const [genreData, setGenreData] = useState({});
+  const [addresses, setAddresses] = useState({});
   const [statusData, setStatusData] = useState({});
   const [hasData, setHasData] = useState(false);
   const { token, user } = useAuth();
@@ -27,60 +28,58 @@ function Home() {
         headers,
       });
       const dashboardData = response.data;
-      const info =
-        user.permission === 'test_center'
-          ? [
-              {
-                title: 'Testes solicitados',
-                value: dashboardData.test_status.solicitado,
-                discription: 'Número de testes solicitados',
-                color: '#05FF1E',
-              },
-              {
-                title: 'Testes coletados',
-                value: dashboardData.test_status.coletado,
-                discription: 'Número de testes coletados',
-                color: '#FFF505',
-              },
-              {
-                title: 'Testes concluídos',
-                value: dashboardData.test_status.concluido,
-                discription: 'Número de testes concluídos',
-                color: '#FF9B05',
-              },
-              {
-                title: 'Testes urgentes',
-                value: dashboardData.need_test,
-                discription: 'Número de pessoas precisando de teste',
-                color: '#FF0505',
-              },
-            ]
-          : [
-              {
-                title: 'Baixo risco',
-                value: dashboardData.risks.baixo,
-                discription: 'Número de casos de risco baixo',
-                color: '#05FF1E',
-              },
-              {
-                title: 'Médio risco',
-                value: dashboardData.risks.medio,
-                discription: 'Número de casos de risco médio',
-                color: '#FFF505',
-              },
-              {
-                title: 'Alto risco',
-                value: dashboardData.risks.alto,
-                discription: 'Número de casos de risco alto',
-                color: '#FF9B05',
-              },
-              {
-                title: 'Crítico risco',
-                value: dashboardData.risks.critico,
-                discription: 'Número de casos de risco crítico',
-                color: '#FF0505',
-              },
-            ];
+      const testInfo = [
+        {
+          title: 'Testes solicitados',
+          value: dashboardData.test_status.solicitado,
+          discription: 'Número de testes solicitados',
+          color: '#05FF1E',
+        },
+        {
+          title: 'Testes coletados',
+          value: dashboardData.test_status.coletado,
+          discription: 'Número de testes coletados',
+          color: '#FFF505',
+        },
+        {
+          title: 'Testes concluídos',
+          value: dashboardData.test_status.concluido,
+          discription: 'Número de testes concluídos',
+          color: '#FF9B05',
+        },
+        {
+          title: 'Testes urgentes',
+          value: dashboardData.need_test,
+          discription: 'Número de pessoas precisando de teste',
+          color: '#FF0505',
+        },
+      ];
+      const info = [
+        {
+          title: 'Baixo risco',
+          value: dashboardData.risks.baixo,
+          discription: 'Número de casos de risco baixo',
+          color: '#05FF1E',
+        },
+        {
+          title: 'Médio risco',
+          value: dashboardData.risks.medio,
+          discription: 'Número de casos de risco médio',
+          color: '#FFF505',
+        },
+        {
+          title: 'Alto risco',
+          value: dashboardData.risks.alto,
+          discription: 'Número de casos de risco alto',
+          color: '#FF9B05',
+        },
+        {
+          title: 'Crítico risco',
+          value: dashboardData.risks.critico,
+          discription: 'Número de casos de risco crítico',
+          color: '#FF0505',
+        },
+      ];
       const genreInfo =
         user.permission === 'test_center'
           ? {
@@ -179,9 +178,10 @@ function Home() {
                 },
               ],
             };
-      setCardData(info);
+      setCardData({ info, testInfo });
       setGenreData(genreInfo);
       setStatusData(statusInfo);
+      setAddresses(dashboardData.address);
       setHasData(true);
     }
     loadDashboardData();
@@ -202,8 +202,19 @@ function Home() {
           <h1 className="center title">Relatório Geral</h1>
         </div>
       </div>
-      <div className="card-container">
-        {cardData.map((card, index) => (
+      <div className="row container">
+        <p>Dados de teste</p>
+      </div>
+      <div className="card-container row">
+        {cardData.info.map((card, index) => (
+          <CardInfo key={index} information={card} />
+        ))}
+      </div>
+      <div className="row container">
+        <p>Dados de teste</p>
+      </div>
+      <div className="card-container row">
+        {cardData.testInfo.map((card, index) => (
           <CardInfo key={index} information={card} />
         ))}
       </div>
@@ -221,6 +232,46 @@ function Home() {
         <div className="col s12 m7 l8 right">
           <p className="title center">Situação dos casos registrados</p>
           <Bar width={100} height={70} data={statusData} />
+        </div>
+      </div>
+      <div className="row container">
+        <div className="col s12 m5 left">
+          <table className="responsive-table centered">
+            <caption className="text-legend">Zona urbana</caption>
+            <thead>
+              <tr style={{ backgroundColor: 'blue', color: '#fff' }}>
+                <th>Bairro</th>
+                <th>Casos</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.keys(addresses.urbana).map((item, key) => (
+                <tr key={key}>
+                  <td>{item}</td>
+                  <td>{addresses.urbana[item]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="col s12 m5 right">
+          <table className="responsive-table centered">
+            <caption className="text-legend">Zona rural</caption>
+            <thead>
+              <tr style={{ backgroundColor: 'blue', color: '#fff' }}>
+                <th>Povoado</th>
+                <th>Casos</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.keys(addresses.rural).map((item, key) => (
+                <tr key={key}>
+                  <td>{item}</td>
+                  <td>{addresses.rural[item]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

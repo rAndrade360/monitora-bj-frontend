@@ -33,12 +33,21 @@ function UserStore() {
     recent_travel: false,
   });
   const [dailyReportChecked, setDailyReportChecked] = useState({});
+  const [districts, setDistricts] = useState({ list: [], selected: 0 });
   const { user } = useAuth();
   const formRef = useRef(null);
   const history = useHistory();
   useEffect(() => {
     const elemsSelect = document.querySelectorAll('select');
     Materialize.FormSelect.init(elemsSelect);
+  }, []);
+
+  useEffect(() => {
+    async function loadDistricts() {
+      const response = await api.get('/districts');
+      setDistricts({ selected: response.data[0].id, list: response.data });
+    }
+    loadDistricts();
   }, []);
 
   useEffect(() => {
@@ -60,6 +69,13 @@ function UserStore() {
   function handleChangeStrategy(e) {
     setStrategies({
       ...strategies,
+      selected: e.target.value,
+    });
+  }
+
+  function handleChangeDistrict(e) {
+    setDistricts({
+      ...districts,
       selected: e.target.value,
     });
   }
@@ -94,6 +110,7 @@ function UserStore() {
         test_type: formSelect.test_type,
       },
     };
+    sendData.address.district_id = parseInt(districts.selected);
     sendData.patient.genre = formSelect.genre;
     sendData.patient.monther_name = sendData.patient.monther_name || null;
     sendData.patient.phone_number = normalizeCpf(data.patient.phone_number);
@@ -188,7 +205,7 @@ function UserStore() {
                     required
                   />
                   <span
-                    class="helper-text"
+                    className="helper-text"
                     data-error="O nome deve ter pelo menos 5 caracteres"
                     data-success="Tudo certo!"
                   ></span>
@@ -203,7 +220,7 @@ function UserStore() {
                     className="validate"
                   />
                   <span
-                    class="helper-text"
+                    className="helper-text"
                     data-error="O nome da mãe deve ter pelo menos 5 caracteres"
                     data-success="Tudo certo!"
                   ></span>
@@ -218,7 +235,7 @@ function UserStore() {
                     className="validate"
                   />
                   <span
-                    class="helper-text"
+                    className="helper-text"
                     data-error="O cpf deve ter pelo menos 11 números"
                     data-success="Tudo certo!"
                   ></span>
@@ -293,7 +310,7 @@ function UserStore() {
                     required
                   />
                   <span
-                    class="helper-text"
+                    className="helper-text"
                     data-error="Informe a data de nascimento"
                     data-success="Tudo certo!"
                   ></span>
@@ -347,14 +364,20 @@ function UserStore() {
             <div className="row">
               <legend>Dados de endereço</legend>
               <div className="row">
-                <div className="input-field col s12 m6">
-                  <label htmlFor="address_address">Bairro*</label>
-                  <Input
-                    id="address_address"
-                    name="address.address"
-                    type="text"
-                    className="validate"
-                  />
+                <div className="col s12 m6">
+                  <label>Bairro ou Povoado*</label>
+                  <select
+                    value={districts.selected}
+                    name="genre"
+                    className="browser-default"
+                    onChange={handleChangeDistrict}
+                  >
+                    {districts.list.map((district) => (
+                      <option key={district.id} value={district.id}>
+                        {district.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="input-field col s12 m6">
                   <label htmlFor="address_street">Logradouro*</label>
@@ -654,6 +677,8 @@ function UserStore() {
                     id="temperature"
                     name="fixed_report.temperature"
                     type="number"
+                    step="any"
+                    min="0"
                     className="validate"
                   />
                 </div>
@@ -663,6 +688,8 @@ function UserStore() {
                     id="blood_glucose"
                     name="fixed_report.blood_glucose"
                     type="number"
+                    step="any"
+                    min="0"
                     className="validate"
                   />
                 </div>
@@ -685,6 +712,8 @@ function UserStore() {
                     id="heart_rate"
                     name="fixed_report.heart_rate"
                     type="number"
+                    step="any"
+                    min="0"
                     className="validate"
                   />
                 </div>
@@ -696,6 +725,8 @@ function UserStore() {
                     id="oxygen_saturation"
                     name="fixed_report.oxygen_saturation"
                     type="number"
+                    step="any"
+                    min="0"
                     className="validate"
                   />
                 </div>

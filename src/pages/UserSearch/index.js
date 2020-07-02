@@ -17,7 +17,7 @@ function UserSearch() {
   const [patientName, setPatientName] = useState('');
   const [strategies, setStrategies] = useState({
     strategies: [],
-    selected: null,
+    selected: '',
   });
   const [filter, setFilter] = useState({
     status: '',
@@ -36,7 +36,7 @@ function UserSearch() {
         );
         setStrategies({
           strategies: response.status === 200 ? newData : [],
-          selected: null,
+          selected: '',
         });
       }
     }
@@ -88,7 +88,7 @@ function UserSearch() {
     setLoading(true);
     getPatients(
       page,
-      strategies.selected,
+      strategies.selected || undefined,
       patientName,
       filter.status,
       filter.date
@@ -140,7 +140,7 @@ function UserSearch() {
                       className="browser-default"
                       onChange={handleChangeStrategy}
                     >
-                      <option value={null}>Todo o município</option>
+                      <option value="">Todo o município</option>
                       {strategies.strategies.map((strategy) => (
                         <option key={strategy.id} value={strategy.id}>
                           {strategy.name}

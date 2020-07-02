@@ -9,6 +9,7 @@ import DailyReport from '../pages/DailyReport';
 import ReportShow from '../pages/ReportShow';
 import StrategyStore from '../pages/StrategyStore';
 import StrategyList from '../pages/StrategyList';
+import DailyNewsletter from '../pages/DailyNewsletter';
 import Login from '../pages/Login';
 import Page404 from '../pages/Page404';
 import UserShow from '../pages/UserShow';
@@ -22,6 +23,12 @@ function Routes() {
         path="/dashboard/patients/:page?"
         exact
         component={UserSearch}
+        isPrivate
+      />
+      <Route
+        path="/dailynewsletter"
+        exact
+        component={DailyNewsletter}
         isPrivate
       />
       <Route

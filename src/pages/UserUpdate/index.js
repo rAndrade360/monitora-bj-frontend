@@ -16,6 +16,7 @@ function UserUpdate() {
     risk: '',
     status: '',
   });
+  const [districts, setDistricts] = useState({ list: [], selected: 0 });
   const [initialData, setInitialData] = useState({});
   const [loading, setLoading] = useState(true);
   const history = useHistory();
@@ -31,11 +32,12 @@ function UserUpdate() {
   useEffect(() => {
     const source = axios.CancelToken.source();
     async function loadPatientData() {
-      let response;
+      let response, responseDistrict;
       try {
         response = await api.get(`/patient/${id}/show`, {
           cancelToken: source.token,
         });
+        responseDistrict = await api.get('/districts');
       } catch (error) {
         if (axios.isCancel(error)) {
           return;
@@ -62,7 +64,6 @@ function UserUpdate() {
           birthday: format(parseISO(patientData.birthday), 'dd/MM/yyyy'),
         },
         address: {
-          address: patientData.address,
           street: patientData.street,
           number: patientData.number,
           complement: patientData.complement,
@@ -79,6 +80,13 @@ function UserUpdate() {
         },
       });
       setLoading(false);
+      const add = responseDistrict.data.filter(
+        (value) => value.name === patientData.address
+      );
+      setDistricts({
+        selected: add.length > 0 ? add[0].id : 1,
+        list: responseDistrict.data,
+      });
     }
 
     loadPatientData();
@@ -90,9 +98,15 @@ function UserUpdate() {
   function handleChangeSelect(e) {
     setFormSelect({ ...formSelect, [e.target.name]: e.target.value });
   }
-
+  function handleChangeDistrict(e) {
+    setDistricts({
+      ...districts,
+      selected: e.target.value,
+    });
+  }
   async function handleSubmit(data) {
     data.patient.genre = formSelect.genre;
+    data.address.district_id = parseInt(districts.selected);
     data.fixed_report.risk = formSelect.risk;
     data.patient.phone_number = formSelect.phone_number || null;
     data.patient.whatsapp = formSelect.whatsapp || null;
@@ -264,14 +278,19 @@ function UserUpdate() {
             <div className="row">
               <div className="row">
                 <div className="col s12 m6">
-                  <label htmlFor="address_address">Bairro*</label>
-                  <Input
-                    placeholder="Centro"
-                    id="address_address"
-                    name="address.address"
-                    type="text"
-                    className="validate"
-                  />
+                  <label>Bairro ou Povoado*</label>
+                  <select
+                    value={districts.selected}
+                    name="genre"
+                    className="browser-default"
+                    onChange={handleChangeDistrict}
+                  >
+                    {districts.list.map((district) => (
+                      <option key={district.id} value={district.id}>
+                        {district.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="col s12 m6">
                   <label htmlFor="address_street">Logradouro*</label>
@@ -367,7 +386,9 @@ function UserUpdate() {
                 <Input
                   id="temperature"
                   name="fixed_report.temperature"
-                  type="text"
+                  type="number"
+                  step="any"
+                  min="0"
                   className="validate"
                 />
               </div>
@@ -378,7 +399,9 @@ function UserUpdate() {
                 <Input
                   id="blood_glucose"
                   name="fixed_report.blood_glucose"
-                  type="text"
+                  type="number"
+                  step="any"
+                  min="0"
                   className="validate"
                 />
               </div>
@@ -400,7 +423,9 @@ function UserUpdate() {
                 <Input
                   id="heart_rate"
                   name="fixed_report.heart_rate"
-                  type="text"
+                  type="number"
+                  step="any"
+                  min="0"
                   className="validate"
                 />
               </div>
@@ -411,7 +436,9 @@ function UserUpdate() {
                 <Input
                   id="oxygen_saturation"
                   name="fixed_report.oxygen_saturation"
-                  type="text"
+                  type="number"
+                  step="any"
+                  min="0"
                   className="validate"
                 />
               </div>

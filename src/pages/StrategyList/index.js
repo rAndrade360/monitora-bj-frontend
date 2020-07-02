@@ -29,8 +29,8 @@ function StrategyList() {
               </tr>
             </thead>
             <tbody>
-              {strategies.map((strategy) => (
-                <tr>
+              {strategies.map((strategy, key) => (
+                <tr key={key}>
                   <td>{strategy.name}</td>
                   <td>{translateStrategyType(strategy.permission)}</td>
                   <td>{strategy.access_id}</td>

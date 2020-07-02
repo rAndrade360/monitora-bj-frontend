@@ -7,7 +7,7 @@ import './styles.css';
 function CardInfo({ information }) {
   return (
     <div className="card" style={{ borderBottomColor: information.color }}>
-      <h2 className="card-title">{information.title}</h2>
+      <p className="title-card">{information.title}</p>
       <p className="card-value">{information.value}</p>
       <p className="card-date">
         {format(Date.now(), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}

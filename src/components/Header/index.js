@@ -47,7 +47,7 @@ function Header() {
         </li>
         {user.permission !== 'test_center' ? (
           <li>
-            <Link to="/dailyreport" className="text-black">
+            <Link to="/dailynewsletter" className="text-black">
               Relatório diário
             </Link>
           </li>
@@ -143,7 +143,7 @@ function Header() {
                   </li>
                   {user.permission !== 'test_center' ? (
                     <li>
-                      <Link to="/dailyreport" className="text-black">
+                      <Link to="/dailynewsletter" className="text-black">
                         Relatório diário
                       </Link>
                     </li>
