@@ -7,7 +7,7 @@ function UpdateTestDataPopUp({ testData, onStatusUpdateClick }) {
   const [statusData, setStatusData] = useState({
     test_status: testData.test_status,
     test_type: testData.test_type,
-    test_result: testData.test_result,
+    test_result: testData.test_result || '',
     final_classification: testData.final_classification || 'nao_definido',
     status: testData.status,
   });
@@ -89,7 +89,7 @@ function UpdateTestDataPopUp({ testData, onStatusUpdateClick }) {
                 defaultChecked={statusData.test_result}
                 onChange={onChangeSelect}
               >
-                <option value={null}>Não testado</option>
+                <option value="">Não testado</option>
                 <option value={false}>negativo</option>
                 <option value={true}>positivo</option>
               </select>

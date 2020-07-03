@@ -7,6 +7,7 @@ import Input from '../../components/Input';
 import InputMask from '../../components/InputMask';
 import api from '../../services/api';
 import DailyReportPopUp from '../../components/DailyReportPopUp';
+import DistrictStore from '../../components/DistrictStore';
 import fetchStrategies from '../../utils/fetchStrategies';
 import { normalizeCpf } from '../../utils/formate';
 import { useAuth } from '../../contexts/Auth';
@@ -33,7 +34,7 @@ function UserStore() {
     recent_travel: false,
   });
   const [dailyReportChecked, setDailyReportChecked] = useState({});
-  const [districts, setDistricts] = useState({ list: [], selected: 0 });
+  const [districts, setDistricts] = useState({ list: [], selected: '' });
   const { user } = useAuth();
   const formRef = useRef(null);
   const history = useHistory();
@@ -42,11 +43,12 @@ function UserStore() {
     Materialize.FormSelect.init(elemsSelect);
   }, []);
 
+  async function loadDistricts() {
+    const response = await api.get('/districts');
+    setDistricts({ selected: '', list: response.data });
+  }
+
   useEffect(() => {
-    async function loadDistricts() {
-      const response = await api.get('/districts');
-      setDistricts({ selected: response.data[0].id, list: response.data });
-    }
     loadDistricts();
   }, []);
 
@@ -102,6 +104,18 @@ function UserStore() {
     }
   }
 
+  async function onDistrictStoreClick(name, zone) {
+    try {
+      await api.post('/districts', { name, zone });
+    } catch (error) {
+      alert('Não foi possível cadastrar o novo bairro (povoado)');
+      return;
+    }
+    alert('Bairro (povoado) cadastrado com sucesso!');
+    await loadDistricts();
+    return;
+  }
+
   async function handleSubmit(data) {
     let sendData = {
       ...data,
@@ -110,7 +124,7 @@ function UserStore() {
         test_type: formSelect.test_type,
       },
     };
-    sendData.address.district_id = parseInt(districts.selected);
+    sendData.address.district_id = parseInt(districts.selected) || null;
     sendData.patient.genre = formSelect.genre;
     sendData.patient.monther_name = sendData.patient.monther_name || null;
     sendData.patient.phone_number = normalizeCpf(data.patient.phone_number);
@@ -372,12 +386,26 @@ function UserStore() {
                     className="browser-default"
                     onChange={handleChangeDistrict}
                   >
+                    <option value="">Não informado</option>
                     {districts.list.map((district) => (
                       <option key={district.id} value={district.id}>
                         {district.name}
                       </option>
                     ))}
                   </select>
+                  <div>
+                    Não encontrou o bairro?{' '}
+                    <button
+                      type="button"
+                      data-target="modalDistrict"
+                      className="modal-trigger btn"
+                    >
+                      Cadastre
+                    </button>
+                    <DistrictStore
+                      onDistrictStoreClick={onDistrictStoreClick}
+                    />{' '}
+                  </div>
                 </div>
                 <div className="input-field col s12 m6">
                   <label htmlFor="address_street">Logradouro*</label>
