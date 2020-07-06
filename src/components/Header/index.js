@@ -104,7 +104,7 @@ function Header() {
                 <li>
                   <Link
                     className="dropdown-trigger text-black"
-                    to={`/dashboard/patients/1`}
+                    to="/dashboard/strategies"
                     data-target="dropdown2"
                   >
                     Estratégias

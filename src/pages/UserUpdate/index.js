@@ -16,7 +16,10 @@ function UserUpdate() {
     risk: '',
     status: '',
   });
-  const [districts, setDistricts] = useState({ list: [], selected: 0 });
+  const [districts, setDistricts] = useState({
+    list: [],
+    selected: 0,
+  });
   const [initialData, setInitialData] = useState({});
   const [loading, setLoading] = useState(true);
   const history = useHistory();
@@ -84,7 +87,7 @@ function UserUpdate() {
         (value) => value.name === patientData.address
       );
       setDistricts({
-        selected: add.length > 0 ? add[0].id : 1,
+        selected: add.length > 0 ? add[0].id : responseDistrict.data[0].id,
         list: responseDistrict.data,
       });
     }
