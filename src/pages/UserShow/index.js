@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import { parse } from 'date-fns';
 import formatTheDateYall from '../../utils/formatTheDateYall';
+import PatientDataPdf from '../../components/PatientDataPdf';
 import api from '../../services/api';
 import { formatCpf, formatPhoneNumber } from '../../utils/formate';
 import {
@@ -14,6 +16,7 @@ import {
 import PopUpDelete from '../../components/PopUpDelete';
 import ReportShow from '../ReportShow';
 import UpdateTestDataPopUp from '../../components/UpdateTestDataPopUp';
+import loadReportData from '../../utils/loadReportData';
 import { useAuth } from '../../contexts/Auth';
 import './styles.css';
 
@@ -21,6 +24,8 @@ import './styles.css';
 
 function UserShow() {
   const [patientData, setPatientData] = useState({ conditions: [] });
+  const [testData, setTestData] = useState({});
+  const [reportData, setReportData] = useState({});
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const { token, user } = useAuth();
@@ -32,6 +37,13 @@ function UserShow() {
         headers: {
           authorization: token,
         },
+      });
+      setTestData({
+        test_status: response.data.test_status,
+        test_type: response.data.test_type,
+        test_result: response.data.test_result,
+        final_classification: response.data.final_classification,
+        status: response.data.status,
       });
       response.data.cpf = formatCpf(response.data.cpf);
       response.data.phone_number = formatPhoneNumber(
@@ -49,11 +61,26 @@ function UserShow() {
       response.data.collection_date = response.data.collection_date
         ? formatTheDateYall(response.data.collection_date)
         : '';
+      response.data.creation_date = formatTheDateYall(
+        response.data.creation_date
+      );
+      response.data.test_type = translateTestType(response.data.test_type);
+      response.data.test_result = translateTestResult(
+        response.data.test_result
+      );
+      response.data.final_classification =
+        translateFinalClassification(response.data.final_classification) ||
+        'Não há dados';
+      const responseReportData = await loadReportData(
+        response.data.id,
+        response.data.fixed_report_id
+      );
       setPatientData(response.data);
+      setReportData(responseReportData);
       setLoading(false);
     }
     loadPatientData(id);
-  }, [id, token, user]);
+  }, [id, patientData.creation_date, token, user]);
 
   async function deletePatient(patientId) {
     try {
@@ -148,20 +175,70 @@ function UserShow() {
           </div>
         </>
       ) : null}
-      {user.permission !== 'basic_unity' ? (
-        <div className="row">
+      <div className="row">
+        {user.permission !== 'basic_unity' ? (
           <div className="col s12 m4">
             <button className="btn blue modal-trigger" data-target="modalTest">
               Atualizar dados de teste{' '}
               <i className="material-icons right">science</i>
             </button>
             <UpdateTestDataPopUp
-              testData={patientData}
+              testData={testData}
               onStatusUpdateClick={handleTestUpdate}
             />
           </div>
+        ) : null}
+        <div className="col s12 m4 right">
+          <button
+            className="btn blue modal-trigger"
+            data-target="modalPatientPDF"
+          >
+            Imprimir ficha
+            <i className="material-icons right">assignment</i>
+          </button>
+          <div className="modal" id="modalPatientPDF">
+            <div className="container">
+              <div className="row">
+                <div className="col s12">
+                  <h1 className="title center">Baixar ficha</h1>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col s12 center">
+                  <PDFDownloadLink
+                    document={
+                      <PatientDataPdf
+                        patientData={patientData}
+                        reportData={reportData}
+                      />
+                    }
+                    fileName="patientData.pdf"
+                    style={{
+                      textDecoration: 'none',
+                      padding: '10px',
+                      color: '#4a4a4a',
+                      backgroundColor: '#f2f2f2',
+                      border: '1px solid #4a4a4a',
+                      marginVertical: '30px',
+                    }}
+                  >
+                    {({ blob, url, loading, error }) =>
+                      loading ? 'Carregado documento' : 'Download pdf'
+                    }
+                  </PDFDownloadLink>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col s12">
+                  <button className="modal-close btn waves-effect red right">
+                    Fechar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      ) : null}
+      </div>
       <div className="row">
         <div className="col s12">
           <h2 className="title">Dados Pessoais</h2>
@@ -215,7 +292,7 @@ function UserShow() {
           </div>
           <div className="col s12 m6">
             <label>Data de registro:</label>
-            <p>{formatTheDateYall(patientData.creation_date)}</p>
+            <p>{patientData.creation_date}</p>
           </div>
         </div>
       </div>
@@ -317,7 +394,7 @@ function UserShow() {
                 Ver sintomas{' '}
               </button>
             </div>
-            <ReportShow patient={patientData} />
+            <ReportShow reportData={reportData} />
           </div>
           <div className="col s12 m6">
             <label>Doenças anteriores</label>
@@ -337,19 +414,15 @@ function UserShow() {
             </div>
             <div className="col s12 m6">
               <label>Tipo:</label>
-              <p>{translateTestType(patientData.test_type)}</p>
+              <p>{patientData.test_type}</p>
             </div>
             <div className="col s12 m6">
               <label>Resultado:</label>
-              <p>{translateTestResult(patientData.test_result)}</p>
+              <p>{patientData.test_result}</p>
             </div>
             <div className="col s12 m6">
               <label>Classificação final:</label>
-              <p>
-                {translateFinalClassification(
-                  patientData.final_classification
-                ) || 'Não há dados'}
-              </p>
+              <p>{patientData.final_classification}</p>
             </div>
             <div className="col s12 m6">
               <label>Data de coleta:</label>

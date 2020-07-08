@@ -5,6 +5,7 @@ import CardInfo from '../../components/CardInfo';
 import fetchStrategies from '../../utils/fetchStrategies';
 import ptBR from 'date-fns/locale/pt-BR';
 import { useAuth } from '../../contexts/Auth';
+import InputMask from 'react-input-mask';
 import api from '../../services/api';
 
 // import { Container } from './styles';
@@ -16,6 +17,7 @@ const nowDate = parse(
 
 function DailyNewsletter() {
   const [newsletter, setNewsletter] = useState({ data: {}, count: 0 });
+  const [dateNewsletter, setDateNewsletter] = useState('');
   const [loading, setLoading] = useState(true);
   const [patients, setPatients] = useState({ list: [], count: 0 });
   const [addresses, setAddresses] = useState({});
@@ -25,11 +27,14 @@ function DailyNewsletter() {
   });
   const { user } = useAuth();
   const history = useHistory();
-  async function loads(selected) {
+  async function loadNewsletterAndPatients(selected, date) {
     async function loadNewsletter() {
       const response = await api.get('/patients/newsletter', {
         params: {
-          date: nowDate,
+          date:
+            date && date.length === 10
+              ? parse(date, 'dd/MM/yyyy', new Date())
+              : nowDate,
           with_address: 'true',
           is_distinct: 'true',
         },
@@ -75,7 +80,10 @@ function DailyNewsletter() {
           strategy_id: selected || api.defaults.headers.common.strategy_id,
         },
         params: {
-          date: nowDate,
+          date:
+            date && date.length === 10
+              ? parse(date, 'dd/MM/yyyy', new Date())
+              : nowDate,
         },
       });
       setPatients({
@@ -89,7 +97,7 @@ function DailyNewsletter() {
   }
 
   useEffect(() => {
-    loads();
+    loadNewsletterAndPatients();
   }, [strategies.selected]);
   useEffect(() => {
     async function loadStrategies() {
@@ -115,7 +123,7 @@ function DailyNewsletter() {
   function handleSearch(e) {
     e.preventDefault();
     setLoading(true);
-    loads(strategies.selected);
+    loadNewsletterAndPatients(strategies.selected, dateNewsletter);
   }
   if (loading) {
     return (
@@ -158,6 +166,20 @@ function DailyNewsletter() {
               </select>
             </div>
           ) : null}
+          <div className="col s12 m4">
+            <label htmlFor="date">Data de cadastro*</label>
+            <InputMask
+              id="date"
+              name="date"
+              type="text"
+              mask="99/99/9999"
+              className="validate"
+              value={dateNewsletter}
+              onChange={(e) => {
+                setDateNewsletter(e.target.value);
+              }}
+            />
+          </div>
           <div className="row">
             <div className="col s12">
               <button className="btn blue right" type="submit">

@@ -1,92 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import api from '../../services/api';
+import React, { useEffect } from 'react';
 import questions from '../../utils/questios.json';
-import {
-  translateBooleanValue,
-  translateStaus,
-  translateRisk,
-} from '../../utils/translate';
-import { formatCpf, formatPhoneNumber } from '../../utils/formate';
 import materialize from 'materialize-css';
 
 // import { Container } from './styles';
 
-function ReportShow({ patient }) {
-  const [reportData, setReportData] = useState({});
-  const [loading, setLoading] = useState(true);
-  const history = useHistory();
-
+function ReportShow({ reportData }) {
   useEffect(() => {
     const elemModal = document.querySelectorAll('.modal');
     materialize.Modal.init(elemModal);
   }, []);
-
-  useEffect(() => {
-    async function loadReportData(patient_id, report_id) {
-      let response;
-      try {
-        response = await api.get(
-          `/patient/dailyreport?patient=${patient_id}&reportId=${report_id}`
-        );
-      } catch (error) {
-        alert('Não foi possível buscar os dados do relatório!');
-      }
-      const reportResponse = response.data.map(
-        ({
-          patient_id,
-          id,
-          birthday,
-          screening_day,
-          created_at,
-          name,
-          cpf,
-          phone_number,
-          genre,
-          status,
-          risk,
-          ...rest
-        }) => {
-          Object.keys(rest).forEach((item) => {
-            rest[item] = translateBooleanValue(rest[item]);
-          });
-          return {
-            patient: {
-              id: patient_id,
-              birthday,
-              screening_day,
-              created_at,
-              name,
-              cpf: formatCpf(cpf),
-              phone_number: formatPhoneNumber(phone_number),
-              genre,
-              status: translateStaus(status),
-              risk: translateRisk(risk),
-            },
-            report: {
-              id,
-              ...rest,
-            },
-          };
-        }
-      );
-      setReportData(reportResponse);
-      setLoading(false);
-    }
-    loadReportData(patient.id, patient.symptoms_id);
-  }, [patient, history]);
-
-  if (loading) {
-    return (
-      <div className="modal" id="modalReport">
-        <div className="row">
-          <div className="col s12">
-            <h1 className="title">Carregando...</h1>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="modal" id="modalReport">
@@ -112,7 +34,7 @@ function ReportShow({ patient }) {
         </div>
         <div className="row">
           <div className="col s12">
-            <button class="modal-close btn waves-effect red right">
+            <button className="modal-close btn waves-effect red right">
               Fechar
             </button>
           </div>

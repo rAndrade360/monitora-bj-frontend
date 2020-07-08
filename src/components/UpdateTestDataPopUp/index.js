@@ -23,6 +23,7 @@ function UpdateTestDataPopUp({ testData, onStatusUpdateClick }) {
     const newData = {
       ...statusData,
       collection_date: data.collection_date,
+      test_result: data.test_result || null,
     };
     onStatusUpdateClick(newData);
     setStatusData(newData);
