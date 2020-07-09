@@ -445,7 +445,6 @@ function UserStore() {
                     name="address.cep"
                     type="number"
                     className="validate"
-                    required
                   />
                 </div>
               </div>
