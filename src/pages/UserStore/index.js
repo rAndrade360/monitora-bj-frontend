@@ -202,27 +202,29 @@ function UserStore() {
               </select>
             </div>
           ) : null}
-          <div className="input-field col s12 m6">
-            <label htmlFor="professional_name">
-              Nome do profissional de saúde
-            </label>
-
-            <Input
-              id="fixed_report_professional_name"
-              name="fixed_report.professional_name"
-              type="text"
-              className="validade"
-              minLength={5}
-            />
-            <span
-              className="helper-text"
-              data-error="O nome deve ter pelo menos 5 caracteres"
-              data-success="Tudo certo!"
-            ></span>
-          </div>
         </div>
         <div className="row">
           <Form ref={formRef} onSubmit={handleSubmit} className="col s12">
+            <div className="row">
+              <div className="input-field col s12 m6">
+                <label htmlFor="professional_name">
+                  Nome do profissional de saúde
+                </label>
+
+                <Input
+                  id="fixed_report_professional_name"
+                  name="fixed_report.professional_name"
+                  type="text"
+                  className="validade"
+                  minLength={5}
+                />
+                <span
+                  className="helper-text"
+                  data-error="O nome deve ter pelo menos 5 caracteres"
+                  data-success="Tudo certo!"
+                ></span>
+              </div>
+            </div>
             <div className="row">
               <legend>Dados pessoais</legend>
               <div className="row">
