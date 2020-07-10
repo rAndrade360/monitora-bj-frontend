@@ -43,6 +43,9 @@ function UserShow() {
         test_type: response.data.test_type,
         test_result: response.data.test_result,
         final_classification: response.data.final_classification,
+        collection_date: response.data.collection_date
+          ? formatTheDateYall(response.data.collection_date)
+          : '',
         status: response.data.status,
       });
       response.data.cpf = formatCpf(response.data.cpf);
@@ -383,6 +386,10 @@ function UserShow() {
           <div className="col s12 m6">
             <label>Observações:</label>
             <p>{patientData.additional_notes || 'Não tem'}</p>
+          </div>
+          <div className="col s12 m6">
+            <label>Nome do profissional de saúde:</label>
+            <p>{patientData.professional_name || 'Não informado'}</p>
           </div>
           <div className="col s12 m6">
             <label>Sintomas</label>

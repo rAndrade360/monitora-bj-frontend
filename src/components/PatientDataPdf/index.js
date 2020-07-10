@@ -141,6 +141,12 @@ const PatientDataPdf = ({ patientData, reportData }) => {
                 <Text style={styles.propertyTitle}>Observações:</Text>
                 <Text>{patientData.additional_notes || 'Não tem'}</Text>
               </View>
+              <View style={styles.dataSection}>
+                <Text style={styles.propertyTitle}>
+                  Nome do Profissional de saúde:
+                </Text>
+                <Text>{patientData.professional_name || 'Não informado'}</Text>
+              </View>
             </View>
             <View style={styles.dataViewLeft}>
               <View style={styles.dataSection}>
